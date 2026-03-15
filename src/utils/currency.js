@@ -1,7 +1,7 @@
-export const formatINR = (amount) => {
-    return new Intl.NumberFormat("en-IN", {
+export const formatEURO = (amount) => {
+    return new Intl.NumberFormat("en-IE", {
         style: "currency",
-        currency: "INR",
+        currency: "EUR",
         maximumFractionDigits: 0
     }).format(amount);
 };

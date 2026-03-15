@@ -1,23 +1,27 @@
 import {memo} from "react";
 import logoUrl from '../assets/logo.svg';
+import {Link} from "react-router-dom";
+import Button from "../components/Button.jsx";
 
-const Header = ({children})=> {
-
+const Header = ()=> {
     return (
-        <header className="fixed top-0 z-50 w-full p-4 py-4 h-14 flex justify-center">
+        <header className="z-50 w-full py-3 px-4 flex justify-center bg-white drop-shadow-sm">
 
-            <div className="flex items-center gap-2">
-                <img src={logoUrl} alt="Logo" className="h-8 w-auto" />
-            </div>
+                <Link to="/" className="flex items-center gap-2">
+                    <img src={logoUrl}  alt="Rental Marketplace" className="h-10 w-auto" />
+                </Link>
 
-            {/* Center title */}
-            <h3 className="absolute left-1/2 -translate-x-1/2 text-xl font-bold text-center whitespace-nowrap">
-                {children}
-            </h3>
+
 
             {/* Right */}
             <div className="ml-auto flex items-center">
-                <button className="bg-accent text-primary p-4 px-8 m-6 rounded-4xl">Signin</button>
+                <Link to="/" className="flex items-center mr-4">
+                    <h4>Create Account</h4>
+                </Link>
+
+                <Link to="/test">
+                    <Button>Signin</Button>
+                </Link>
             </div>
         </header>
     );
