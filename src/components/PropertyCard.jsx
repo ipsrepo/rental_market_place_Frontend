@@ -1,5 +1,6 @@
 import {useState} from 'react';
-import {formatEURO} from "../utils/currency.js";
+import {LocationIcon,HeartIcon} from '../assets/icons';
+import {formatEURO} from "../utils/currency";
 
 const PropertyCard = ({property}) => {
     console.log(property)
@@ -50,9 +51,9 @@ const PropertyCard = ({property}) => {
                 {/* Favorite Button */}
                 <button
                     onClick={toggleFavorite}
-                    className="absolute top-2 right-2 p-2 bg-white rounded-full shadow-md hover:bg-gray-100 transition"
+                    className="absolute top-2 right-2 p-2 bg-white rounded-full cursor-pointer  hover:bg-gray-100 transition"
                 >
-                    {isFavorite ? "fav" : 'non Fav'}
+                    {isFavorite ? "❤️" : 'make fav'}
                 </button>
 
                 {/* New Badge */}
@@ -66,21 +67,16 @@ const PropertyCard = ({property}) => {
             {/* Content Section */}
             <div className="p-4">
                 {/* Title and Location */}
-                <h3 className="text-lg font-semibold text-gray-800 line-clamp-2">{title}</h3>
-                <p className="text-sm text-gray-600 mt-1 flex items-center">
-                    <svg className="h-4 w-4 mr-1 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                              d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                              d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-                    </svg>
+                <h3 className="text-lg font-semibold line-clamp-2">{title}</h3>
+                <p className=" mt-1 flex items-center">
+                    <LocationIcon />
                     {location}
                 </p>
 
                 {/* Price */}
                 <div className="mt-3 flex items-baseline">
                     <span className="text-2xl font-bold text-primary">{formattedPrice}</span>
-                    <span className="text-sm text-gray-500 ml-1">/{pricedisplay}</span>
+                    <span className="text-sm  ml-1">/{pricedisplay}</span>
                 </div>
 
                 {/* Property Type & Rental Type */}
