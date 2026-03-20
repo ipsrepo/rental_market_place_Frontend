@@ -100,13 +100,13 @@ const CreateAccount = () => {
                     />
                     <span>
                         I accept the{' '}
-                        <Link to="/terms" className="text-primary hover:underline">
+                        <Link to="/terms">
                             Terms and Conditions
                         </Link>
                     </span>
                 </label>
 
-                <Button type="submit" styles="place-self-center">
+                <Button type="submit" styles="w-full">
                     Sign Up
                 </Button>
             </form>
@@ -114,7 +114,7 @@ const CreateAccount = () => {
             {/* Sign In Link */}
             <p className="text-center mt-6">
                 Already have an account?{' '}
-                <Link to="/signin" className="text-primary hover:underline">
+                <Link to="/signin">
                     Sign In
                 </Link>
             </p>

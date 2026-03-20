@@ -15,7 +15,7 @@ const Header = ()=> {
 
             {/* Right */}
             <div className="ml-auto flex items-center">
-                <Link to="/" className="flex items-center mr-4">
+                <Link to="/signup" className="flex items-center mr-4">
                     <h4>Create Account</h4>
                 </Link>
 

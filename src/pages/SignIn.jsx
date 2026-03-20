@@ -59,7 +59,7 @@ const SignIn = () => {
                         <span>Remember me</span>
                 </label>
 
-                <Button styles="place-self-center">
+                <Button styles="w-full">
                     Sign In
                 </Button>
             </form>
