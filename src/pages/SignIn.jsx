@@ -1,22 +1,35 @@
 import React, {useState} from 'react';
 import Button from "../components/Button.jsx";
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import AuthCard from "../components/AuthCard.jsx";
+import {loginUser} from "../services/API/user.service";
+import {setLocalStorage} from "../utils/localStorage.js";
+import {SUCCESS, TOKEN} from "../constants/app.constant.js";
 
 const SignIn = () => {
     const [formData, setFormData] = useState({
-        email: '',
-        password: '',
+        email: 'sam@test.com',
+        password: 'sam',
     });
+
+    const nav = useNavigate();
 
     const handleChange = (e) => {
         const {name, value} = e.target;
         setFormData((prev) => ({...prev, [name]: value}));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log('user data:', formData);
+        try {
+            const res = await loginUser(formData);
+            if(res.status === SUCCESS) {
+                setLocalStorage(TOKEN, res.token);
+                nav('/')
+            }
+        } catch (error) {
+            alert(`something went wrong ${error}`);
+        }
     };
 
     return (

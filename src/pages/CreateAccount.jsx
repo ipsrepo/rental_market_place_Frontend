@@ -1,27 +1,31 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, {useState} from 'react';
+import {Link, useNavigate} from 'react-router-dom';
 import Button from '../components/Button';
 import AuthCard from '../components/AuthCard';
+import {createUser} from "../services/API/user.service";
+import {SUCCESS} from "../constants/app.constant.js";
 
 const CreateAccount = () => {
     const [formData, setFormData] = useState({
-        name: '',
-        email: '',
-        password: '',
-        confirmPassword: '',
+        name: 'sam',
+        email: 'sam@test.com',
+        mobile: '+353 875654356',
+        password: 'sam',
+        passwordConfirm: 'sam',
     });
 
-    const [acceptTerms, setAcceptTerms] = useState(false);
+    const nav = useNavigate();
+
+    const [acceptTerms, setAcceptTerms] = useState(true);
 
     const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData((prev) => ({ ...prev, [name]: value }));
+        const {name, value} = e.target;
+        setFormData((prev) => ({...prev, [name]: value}));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // Basic validation
-        if (formData.password !== formData.confirmPassword) {
+        if (formData.password !== formData.passwordConfirm) {
             alert("Passwords don't match");
             return;
         }
@@ -29,8 +33,15 @@ const CreateAccount = () => {
             alert("Please accept the terms and conditions");
             return;
         }
-        console.log('Sign up data:', formData);
-        // TODO: API call for registration
+        try {
+            const res = await createUser(formData);
+            if (res.status === SUCCESS) {
+                nav('/signin')
+            }
+        } catch (error) {
+            console.log(error);
+        }
+
     };
 
     return (
@@ -66,6 +77,19 @@ const CreateAccount = () => {
                     />
                 </div>
 
+                {/* Mobile */}
+                <div>
+                    <label htmlFor="mobile">Mobile Number</label>
+                    <input
+                        type="text"
+                        id="mobile"
+                        name="mobile"
+                        value={formData.mobile}
+                        onChange={handleChange}
+                        required
+                    />
+                </div>
+
                 {/* Password */}
                 <div>
                     <label htmlFor="password">Password</label>
@@ -80,12 +104,12 @@ const CreateAccount = () => {
                 </div>
 
                 <div>
-                    <label htmlFor="confirmPassword">Confirm Password</label>
+                    <label htmlFor="passwordConfirm">Confirm Password</label>
                     <input
                         type="password"
-                        id="confirmPassword"
-                        name="confirmPassword"
-                        value={formData.confirmPassword}
+                        id="passwordConfirm"
+                        name="passwordConfirm"
+                        value={formData.passwordConfirm}
                         onChange={handleChange}
                         required
                     />
