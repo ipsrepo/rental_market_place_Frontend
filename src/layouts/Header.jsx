@@ -3,6 +3,7 @@ import LogoUrl from '../assets/logo.svg?react';
 import {Link} from "react-router-dom";
 import Button from "../components/Button.jsx";
 import {TOKEN} from "../constants/app.constant.js";
+import ProfileMenu from "./ProfileMenu.jsx";
 
 const Header = () => {
 
@@ -20,22 +21,16 @@ const Header = () => {
             <div className="ml-auto flex items-center">
 
                 {token ?
-                    <>
-                        <Link to="/signup" className="flex items-center mr-4">
-                            <h4>My Favorite</h4>
-                        </Link>
-                        <Link to="/signin">
-                            <Button>P</Button>
-                        </Link>
-
-                    </>
+                    <div style={{ padding: '20px' }}>
+                        <ProfileMenu/>
+                    </div>
                     :
                     <>
                         <Link to="/signup" className="flex items-center mr-4">
                             <h4>Create Account</h4>
                         </Link>
 
-                        <Link to="/signin">
+                        <Link to="/login">
                             <Button>Signin</Button>
                         </Link>
                     </>

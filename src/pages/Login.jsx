@@ -2,11 +2,11 @@ import React, {useState} from 'react';
 import Button from "../components/Button.jsx";
 import {Link, useNavigate} from "react-router-dom";
 import AuthCard from "../components/AuthCard.jsx";
-import {loginUser} from "../services/API/user.service";
+import {loginUser} from "../services/user.service";
 import {setLocalStorage} from "../utils/localStorage.js";
-import {SUCCESS, TOKEN} from "../constants/app.constant.js";
+import {SUCCESS, TOKEN, USER} from "../constants/app.constant.js";
 
-const SignIn = () => {
+const Login = () => {
     const [formData, setFormData] = useState({
         email: 'sam@test.com',
         password: 'sam',
@@ -24,7 +24,8 @@ const SignIn = () => {
         try {
             const res = await loginUser(formData);
             if(res.status === SUCCESS) {
-                setLocalStorage(TOKEN, res.token);
+                setLocalStorage(TOKEN, res?.token ?? '');
+                setLocalStorage(USER, res?.data?.user ?? '')
                 nav('/')
             }
         } catch (error) {
@@ -88,4 +89,4 @@ const SignIn = () => {
     );
 };
 
-export default SignIn;
+export default Login;

@@ -1,24 +1,42 @@
 import {useEffect, useState} from "react";
-import PropertyCard from "../components/PropertyCard.jsx";
+import PropertyCard from "../components/PropertyCard";
+import {getAllProperties} from "../services/property.service";
+import {SUCCESS} from "../constants/app.constant.js";
 
 const Home = () => {
 
-    const [data, setData] = useState();
-    const [loading, setLoading] = useState(true);
+    const [data, setData] = useState([]);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        fetch(`/data/fakeData.json`)
-            .then((response) => {
-                if (!response.ok) {
-                    throw new Error("Failed to fetch JSON data");
+        // fetch(`/data/fakeData.json`)
+        //     .then((response) => {
+        //         if (!response.ok) {
+        //             throw new Error("Failed to fetch JSON data");
+        //         }
+        //         return response.json();
+        //     })
+        //     .then((res) => {
+        //         setData(res);
+        //         setLoading(false);
+        //     })
+        //     .catch((error) => console.error("Error loading JSON:", error));
+
+        const fetchData = async () => {
+            try {
+                setLoading(true);
+                const res = await getAllProperties();
+                if (res.status == SUCCESS) {
+                    setData(res.data);
+                    setLoading(false);
                 }
-                return response.json();
-            })
-            .then((res) => {
-                setData(res);
+            } catch (error) {
                 setLoading(false);
-            })
-            .catch((error) => console.error("Error loading JSON:", error));
+                console.error(error);
+            }
+        }
+
+        fetchData();
     }, []);
 
     if (loading) return <p>Loading...</p>;

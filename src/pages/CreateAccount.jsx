@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import {Link, useNavigate} from 'react-router-dom';
 import Button from '../components/Button';
 import AuthCard from '../components/AuthCard';
-import {createUser} from "../services/API/user.service";
+import {createUser} from "../services/user.service";
 import {SUCCESS} from "../constants/app.constant.js";
 
 const CreateAccount = () => {
@@ -36,7 +36,7 @@ const CreateAccount = () => {
         try {
             const res = await createUser(formData);
             if (res.status === SUCCESS) {
-                nav('/signin')
+                nav('/login')
             }
         } catch (error) {
             console.log(error);
@@ -138,7 +138,7 @@ const CreateAccount = () => {
             {/* Sign In Link */}
             <p className="text-center mt-6">
                 Already have an account?{' '}
-                <Link to="/signin">
+                <Link to="/login">
                     Sign In
                 </Link>
             </p>
