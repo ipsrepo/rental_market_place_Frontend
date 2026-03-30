@@ -5,7 +5,9 @@
     --color-accent: #212234;
     --color-white: #fff;
     --color-text: #484e48;
+    --color-bg: #e0e8e154;
     --color-border: #dedfe7;
+    --color-red: #c10007;
 
     /*font*/
     --text-tiny: 0.875rem;

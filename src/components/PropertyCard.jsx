@@ -1,10 +1,12 @@
 import {useState} from 'react';
-import {LocationIcon,HeartIcon} from '../assets/icons';
+import {LocationIcon, HeartIcon} from '../assets/icons';
 import {formatEURO} from "../utils/currency";
 import {formatDate} from "../utils/date.js";
+import {addFavorite, deleteFavorite} from "../services/favorite.service.js";
+import {getLocalStorage} from "../utils/localStorage.js";
+import {SUCCESS, USER} from "../constants/app.constant.js";
 
 const PropertyCard = ({property}) => {
-    console.log(property)
     const {
         title,
         location,
@@ -23,17 +25,39 @@ const PropertyCard = ({property}) => {
         billsincluded,
         ownerrating,
         berrating,
-        tags
+        tags,
+        _id
     } = property;
 
 
-
     const [isFavorite, setIsFavorite] = useState(ismyfavorite);
+    const user = getLocalStorage(USER);
 
-    const toggleFavorite = (e) => {
+    const toggleFavorite = async (e) => {
         e.preventDefault();
         e.stopPropagation();
-        setIsFavorite(!isFavorite);
+
+        const formatData = {
+            property: _id,
+            user: user?._id
+        };
+
+
+        try {
+
+            let res;
+            if (!isFavorite) {
+                res = await addFavorite(formatData)
+            } else {
+                res = await deleteFavorite(formatData)
+            }
+
+            if (res.status == SUCCESS) {
+                setIsFavorite(!isFavorite);
+            }
+        } catch (error) {
+            console.log(error);
+        }
     };
 
     const formattedPrice = formatEURO(price);
@@ -59,7 +83,8 @@ const PropertyCard = ({property}) => {
 
                 {/* New Badge */}
                 {isnew && (
-                    <span className="absolute top-2 left-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded">
+                    <span
+                        className="absolute top-2 left-2 bg-primary text-white text-xs font-bold px-2 py-1 rounded">
                         NEW
                     </span>
                 )}
@@ -70,7 +95,7 @@ const PropertyCard = ({property}) => {
                 {/* Title and Location */}
                 <h3 className="text-lg font-semibold line-clamp-2">{title}</h3>
                 <p className=" mt-1 flex items-center">
-                    <LocationIcon />
+                    <LocationIcon/>
                     {location}
                 </p>
 
@@ -89,7 +114,7 @@ const PropertyCard = ({property}) => {
                         {rentaltype}
                     </span>
                     {billsincluded && (
-                        <span className="bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded">
+                        <span className="bg-green-100 text-primary text-xs font-medium px-2 py-1 rounded">
                             Bills included
                         </span>
                     )}
@@ -114,7 +139,7 @@ const PropertyCard = ({property}) => {
                         <span>{bathrooms} {bathrooms === 1 ? 'bath' : 'baths'}</span>
                     </div>
                     {isprivatebathroom && (
-                        <div className="flex items-center col-span-2 text-xs text-green-600">
+                        <div className="flex items-center col-span-2 text-xs text-primary">
                             ✓ Private bathroom
                         </div>
                     )}

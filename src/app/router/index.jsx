@@ -4,6 +4,7 @@ import Home from "../../pages/Home.jsx";
 import NotFound from "../../pages/NotFound.jsx";
 import SignIn from "../../pages/login.jsx";
 import CreateAccount from "../../pages/CreateAccount.jsx";
+import ProfilePage from "../../pages/Profile/index.jsx";
 
 export const router = createBrowserRouter([
     {
@@ -16,8 +17,8 @@ export const router = createBrowserRouter([
             },
 
             {
-                path: "link2",
-                element: <Home/>,
+                path: "/profile",
+                element: <ProfilePage/>
             },
             {
                 path: "*",

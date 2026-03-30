@@ -46,15 +46,13 @@ const ProfileMenu = () => {
                     </div>
 
                     <div className="px-4 py-3 border-b border-gray-100 flex flex-col gap-2 profile-menu">
-                        <Link to="/favorites">
+                        <Link to="/profile?tab=saved">
                             <p>My Favorites</p>
                         </Link>
-
-                        <Link to="/favorites">
+                        <Link to="/profile?tab=listings">
                             <h4>My Properties</h4>
                         </Link>
-
-                        <Link to="/favorites">
+                        <Link to="/profile?tab=profile">
                             <h4>Profile</h4>
                         </Link>
                     </div>
