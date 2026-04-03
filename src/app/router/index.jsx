@@ -5,6 +5,7 @@ import NotFound from "../../pages/NotFound.jsx";
 import SignIn from "../../pages/login.jsx";
 import CreateAccount from "../../pages/CreateAccount.jsx";
 import ProfilePage from "../../pages/Profile/index.jsx";
+import AddProperty from "../../pages/AddProperty.jsx";
 
 export const router = createBrowserRouter([
     {
@@ -19,6 +20,10 @@ export const router = createBrowserRouter([
             {
                 path: "/profile",
                 element: <ProfilePage/>
+            },
+            {
+                path: "/addProperty",
+                element: <AddProperty/>
             },
             {
                 path: "*",

@@ -78,7 +78,7 @@ const PropertyCard = ({property}) => {
                     onClick={toggleFavorite}
                     className="absolute top-2 right-2 p-2 bg-white rounded-full cursor-pointer  hover:bg-gray-100 transition"
                 >
-                    {isFavorite ? "❤️" : 'make fav'}
+                    {isFavorite ? "❤️" : '🩶'}
                 </button>
 
                 {/* New Badge */}

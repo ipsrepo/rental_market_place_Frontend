@@ -2,6 +2,7 @@
 // My Properties Tab
 // ═══════════════════════════════════════════════════════════════════════════════
 import PropertyCard from "../../components/PropertyCard.jsx";
+import {Link} from "react-router-dom";
 
 const MyProperties = ({properties, onEdit, onToggleAvailability}) => {
     if (properties.length === 0) {
@@ -15,10 +16,12 @@ const MyProperties = ({properties, onEdit, onToggleAvailability}) => {
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900">No listings yet</h3>
                 <p className="text-gray-500 text-sm mt-1">Properties you post will appear here.</p>
-                <button
-                    className="mt-4 bg-primary text-white text-sm font-medium px-5 py-2 rounded-lg hover:bg-primary transition-colors">
-                    Post a property
-                </button>
+                <Link to='/addProperty'>
+                    <button
+                        className="mt-4 bg-primary text-white text-sm font-medium px-5 py-2 rounded-lg hover:bg-primary transition-colors">
+                        Post a property
+                    </button>
+                </Link>
             </div>
         );
     }
@@ -87,4 +90,4 @@ const MyProperties = ({properties, onEdit, onToggleAvailability}) => {
     );
 };
 
-export  default MyProperties;
+export default MyProperties;
