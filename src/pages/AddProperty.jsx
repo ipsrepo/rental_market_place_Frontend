@@ -4,8 +4,11 @@ import {
     BEDROOM_OPTIONS, BER_RATINGS, INITIAL_FORM,
     PRICE_DISPLAY,
     PROPERTY_TYPES,
-    RENTAL_TYPES
+    RENTAL_TYPES, SUCCESS
 } from "../constants/app.constant.js";
+import {API_ENDPOINTS} from "../constants/endPoints.js";
+import {addProperty} from "../services/property.service.js";
+import {useNavigate} from "react-router-dom";
 
 
 // ── Reusable field components ────────────────────────────────────────────────
@@ -13,7 +16,7 @@ import {
 const Label = ({ children, required }) => (
     <label className="block text-sm font-medium text-gray-700 mb-1.5">
         {children}
-        {required && <span className="text-red-500 ml-0.5">*</span>}
+        {required && <span className="text-red ml-0.5">*</span>}
     </label>
 );
 
@@ -21,12 +24,12 @@ const Input = ({ label, required, error, ...props }) => (
     <div>
         {label && <Label required={required}>{label}</Label>}
         <input
-            className={`w-full px-3.5 py-2.5 border rounded-lg text-sm text-gray-900 placeholder-gray-400
+            className={`w-full px-3.5 py-2.5 border rounded-lg text-sm text-accent placeholder-gray-400
         focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all
-        ${error ? 'border-red-400 bg-red-50' : 'border-gray-300 bg-white hover:border-gray-400'}`}
+        ${error ? 'border-red bg-red-50' : 'border-gray-300 bg-white hover:border-gray-400'}`}
             {...props}
         />
-        {error && <p className="mt-1 text-xs text-red-500">{error}</p>}
+        {error && <p className="mt-1 text-xs text-red">{error}</p>}
     </div>
 );
 
@@ -34,19 +37,19 @@ const Select = ({ label, required, error, children, ...props }) => (
     <div>
         {label && <Label required={required}>{label}</Label>}
         <select
-            className={`w-full px-3.5 py-2.5 border rounded-lg text-sm text-gray-900
+            className={`w-full px-3.5 py-2.5 border rounded-lg text-sm text-accent cursor-pointer
         focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all
-        ${error ? 'border-red-400 bg-red-50' : 'border-gray-300 bg-white hover:border-gray-400'}`}
+        ${error ? 'border-red bg-red-50' : 'border-gray-300 bg-white hover:border-gray-400'}`}
             {...props}
         >
             {children}
         </select>
-        {error && <p className="mt-1 text-xs text-red-500">{error}</p>}
+        {error && <p className="mt-1 text-xs text-red">{error}</p>}
     </div>
 );
 
 const Toggle = ({ label, description, checked, onChange }) => (
-    <div className="flex items-center justify-between py-3 px-4 bg-gray-50 rounded-lg border border-gray-200">
+    <div className="flex items-center justify-between py-3 px-4 bg-gray-50 rounded-lg border border-gray-200 cursor-pointer">
         <div>
             <p className="text-sm font-medium text-gray-800">{label}</p>
             {description && <p className="text-xs text-gray-500 mt-0.5">{description}</p>}
@@ -73,13 +76,12 @@ const SectionHeader = ({ number, title, subtitle }) => (
             {number}
         </div>
         <div>
-            <h2 className="text-base font-semibold text-gray-900">{title}</h2>
+            <h2 className="text-base font-semibold text-accent">{title}</h2>
             {subtitle && <p className="text-sm text-gray-500 mt-0.5">{subtitle}</p>}
         </div>
     </div>
 );
 
-// ── Image Upload ─────────────────────────────────────────────────────────────
 const ImageUpload = ({ images, onAdd, onRemove, label, maxImages = 10 }) => {
     const fileRef = useRef();
 
@@ -103,7 +105,7 @@ const ImageUpload = ({ images, onAdd, onRemove, label, maxImages = 10 }) => {
                         <button
                             type="button"
                             onClick={() => onRemove(i)}
-                            className="absolute top-1 right-1 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors text-xs font-bold"
+                            className="absolute top-1 right-1 w-6 h-6 bg-red text-white rounded-full flex items-center justify-center hover:bg-red transition-colors text-xs font-bold"
                         >
                             ×
                         </button>
@@ -119,7 +121,7 @@ const ImageUpload = ({ images, onAdd, onRemove, label, maxImages = 10 }) => {
                     <button
                         type="button"
                         onClick={() => fileRef.current.click()}
-                        className="aspect-video rounded-lg border-2 border-dashed border-gray-300 hover:border-blue-400 hover:bg-blue-50 transition-all flex flex-col items-center justify-center gap-1 text-gray-400 hover:text-primary"
+                        className="aspect-video rounded-lg border-2 border-dashed border-gray-300 hover:border-primary hover:bg-bg transition-all flex flex-col items-center justify-center gap-1 text-gray-400 hover:text-primary"
                     >
                         <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v16m8-8H4" />
@@ -134,9 +136,6 @@ const ImageUpload = ({ images, onAdd, onRemove, label, maxImages = 10 }) => {
     );
 };
 
-// ══════════════════════════════════════════════════════════════════════════════
-// Main Form Page
-// ══════════════════════════════════════════════════════════════════════════════
 const PropertyFormPage = ({ existingProperty = null, onSubmit, onCancel }) => {
     const isEdit = !!existingProperty;
 
@@ -145,6 +144,8 @@ const PropertyFormPage = ({ existingProperty = null, onSubmit, onCancel }) => {
     const [errors, setErrors] = useState({});
     const [saving, setSaving] = useState(false);
     const [saved,  setSaved]  = useState(false);
+
+    const nav = useNavigate();
 
     const set = (key, value) => {
         setForm((prev) => ({ ...prev, [key]: value }));
@@ -176,7 +177,7 @@ const PropertyFormPage = ({ existingProperty = null, onSubmit, onCancel }) => {
         if (Object.keys(errs).length > 0) {
             setErrors(errs);
             // scroll to first error
-            document.querySelector('.border-red-400')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            document.querySelector('.border-red')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
             return;
         }
 
@@ -188,6 +189,11 @@ const PropertyFormPage = ({ existingProperty = null, onSubmit, onCancel }) => {
                 if (img instanceof File) formData.append('images', img);
             });
 
+            const response = await addProperty(formData);
+
+            if(response.status == SUCCESS){
+                nav('/profile?tab=listings')
+            }
             await onSubmit?.(formData);
             setSaved(true);
             setTimeout(() => setSaved(false), 3000);
@@ -199,7 +205,7 @@ const PropertyFormPage = ({ existingProperty = null, onSubmit, onCancel }) => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="bg-bg w-3/4 max-w-[1280px] p-8">
 
             {/* Header */}
             <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
@@ -215,7 +221,7 @@ const PropertyFormPage = ({ existingProperty = null, onSubmit, onCancel }) => {
                             </svg>
                         </button>
                         <div>
-                            <h1 className="text-base font-bold text-gray-900">
+                            <h1 className="text-base font-bold text-accent">
                                 {isEdit ? 'Edit property' : 'Add new property'}
                             </h1>
                             <p className="text-xs text-gray-500">
@@ -263,7 +269,7 @@ const PropertyFormPage = ({ existingProperty = null, onSubmit, onCancel }) => {
                         onAdd={(files) => setImages((prev) => [...prev, ...files].slice(0, 10))}
                         onRemove={(i) => setImages((prev) => prev.filter((_, idx) => idx !== i))}
                     />
-                    {errors.images && <p className="mt-2 text-xs text-red-500">{errors.images}</p>}
+                    {errors.images && <p className="mt-2 text-xs text-red">{errors.images}</p>}
                 </div>
 
                 {/* ── Section 2: Basic info ──────────────────────────────────────── */}
@@ -291,13 +297,13 @@ const PropertyFormPage = ({ existingProperty = null, onSubmit, onCancel }) => {
                             value={form.details}
                             onChange={(e) => set('details', e.target.value)}
                             maxLength={2000}
-                            className={`w-full px-3.5 py-2.5 border rounded-lg text-sm text-gray-900 placeholder-gray-400
+                            className={`w-full px-3.5 py-2.5 border rounded-lg text-sm text-accent placeholder-gray-400
                 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all resize-none
-                ${errors.details ? 'border-red-400 bg-red-50' : 'border-gray-300 hover:border-gray-400'}`}
+                ${errors.details ? 'border-red bg-red-50' : 'border-gray-300 hover:border-gray-400'}`}
                         />
                         <div className="flex justify-between mt-1">
                             {errors.details
-                                ? <p className="text-xs text-red-500">{errors.details}</p>
+                                ? <p className="text-xs text-red">{errors.details}</p>
                                 : <span />}
                             <span className="text-xs text-gray-400">{form.details.length}/2000</span>
                         </div>
@@ -323,9 +329,9 @@ const PropertyFormPage = ({ existingProperty = null, onSubmit, onCancel }) => {
                                 key={t.value}
                                 type="button"
                                 onClick={() => set('propertytype', t.value)}
-                                className={`py-3 px-4 rounded-xl border-2 text-sm font-medium transition-all ${
+                                className={`py-3 px-4 rounded-xl border-2 text-sm font-medium transition-all cursor-pointer ${
                                     form.propertytype === t.value
-                                        ? 'border-primary bg-blue-50 text-primary'
+                                        ? 'border-primary bg-bg text-primary'
                                         : 'border-gray-200 text-gray-700 hover:border-gray-300'
                                 }`}
                             >
@@ -333,7 +339,7 @@ const PropertyFormPage = ({ existingProperty = null, onSubmit, onCancel }) => {
                             </button>
                         ))}
                     </div>
-                    {errors.propertytype && <p className="text-xs text-red-500">{errors.propertytype}</p>}
+                    {errors.propertytype && <p className="text-xs text-red">{errors.propertytype}</p>}
 
                     <div className="grid grid-cols-3 gap-3">
                         {RENTAL_TYPES.map((t) => (
@@ -341,9 +347,9 @@ const PropertyFormPage = ({ existingProperty = null, onSubmit, onCancel }) => {
                                 key={t.value}
                                 type="button"
                                 onClick={() => set('rentaltype', t.value)}
-                                className={`py-3 px-4 rounded-xl border-2 text-sm font-medium transition-all ${
+                                className={`py-3 px-4 rounded-xl border-2 text-sm font-medium transition-all cursor-pointer ${
                                     form.rentaltype === t.value
-                                        ? 'border-primary bg-blue-50 text-primary'
+                                        ? 'border-primary bg-bg text-primary'
                                         : 'border-gray-200 text-gray-700 hover:border-gray-300'
                                 }`}
                             >
@@ -368,12 +374,12 @@ const PropertyFormPage = ({ existingProperty = null, onSubmit, onCancel }) => {
                                     placeholder="0"
                                     value={form.price}
                                     onChange={(e) => set('price', e.target.value)}
-                                    className={`w-full pl-7 pr-3.5 py-2.5 border rounded-lg text-sm text-gray-900
+                                    className={`w-full pl-7 pr-3.5 py-2.5 border rounded-lg text-sm text-accent
                     focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all
-                    ${errors.price ? 'border-red-400 bg-red-50' : 'border-gray-300 hover:border-gray-400'}`}
+                    ${errors.price ? 'border-red bg-red-50' : 'border-gray-300 hover:border-gray-400'}`}
                                 />
                             </div>
-                            {errors.price && <p className="mt-1 text-xs text-red-500">{errors.price}</p>}
+                            {errors.price && <p className="mt-1 text-xs text-red">{errors.price}</p>}
                         </div>
 
                         <Select
