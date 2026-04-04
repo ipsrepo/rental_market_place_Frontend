@@ -24,12 +24,11 @@ const ProfilePage = () => {
     const userDetails = getLocalStorage(USER);
 
     useEffect(() => {
-
         const fetchSaved = async () => {
             try {
                 const res = await getUserFavorites(userDetails?._id);
-                if(res.status === SUCCESS) {
-                    setSavedProperties(res.data);
+                if(res.status == SUCCESS) {
+                    setSavedProperties(res.data?.map(property => property.property));
                 }
             } catch (e) {
                 console.error(e);
@@ -37,7 +36,7 @@ const ProfilePage = () => {
         }
 
         fetchSaved()
-    })
+    },[])
 
     const handleDeleteAccount = () => {
         alert('Account deleted (wire up your API call here)');
@@ -54,8 +53,8 @@ const ProfilePage = () => {
     };
 
     const tabCounts = {
-        saved: savedProperties.length,
-        listings: myProperties.length,
+        saved: savedProperties?.length ?? 0,
+        listings: myProperties?.length ?? 0,
     };
 
     return (

@@ -5,6 +5,7 @@ import {formatDate} from "../utils/date.js";
 import {addFavorite, deleteFavorite} from "../services/favorite.service.js";
 import {getLocalStorage} from "../utils/localStorage.js";
 import {SUCCESS, USER} from "../constants/app.constant.js";
+import {useNavigate} from "react-router-dom";
 
 const PropertyCard = ({property}) => {
     const {
@@ -32,10 +33,16 @@ const PropertyCard = ({property}) => {
 
     const [isFavorite, setIsFavorite] = useState(ismyfavorite);
     const user = getLocalStorage(USER);
+    const nav = useNavigate();
 
     const toggleFavorite = async (e) => {
         e.preventDefault();
         e.stopPropagation();
+
+        if(!user){
+            nav('/login');
+            return;
+        }
 
         const formatData = {
             property: _id,

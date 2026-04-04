@@ -15,11 +15,13 @@ const SavedProperties = ({ properties }) => {
         );
     }
 
+    const updatedProperties = properties.map((item) => ({...item, ismyfavorite: true}));
+
     return (
         <div>
-            <p className="text-sm text-gray-500 mb-4">{properties.length} saved {properties.length === 1 ? 'property' : 'properties'}</p>
+            <p className="text-sm text-gray-500 mb-4">{updatedProperties.length} saved {updatedProperties.length === 1 ? 'property' : 'properties'}</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                {properties.map((property) => (
+                {updatedProperties.map((property) => (
                     <PropertyCard key={property._id} property={property} />
                 ))}
             </div>
