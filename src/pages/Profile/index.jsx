@@ -4,8 +4,9 @@ import SavedProperties from "./SavedProperties.jsx";
 import MyProperties from "./MyProperties.jsx";
 import {getLocalStorage} from "../../utils/localStorage.js";
 import {SUCCESS, USER} from "../../constants/app.constant.js";
-import {useSearchParams} from "react-router-dom";
+import {useNavigate, useSearchParams} from "react-router-dom";
 import {getUserFavorites} from "../../services/favorite.service.js";
+import {deleteProperty, getUserProperties} from "../../services/property.service.js";
 
 
 const TABS = [
@@ -22,12 +23,13 @@ const ProfilePage = () => {
     const [savedProperties, setSavedProperties] = useState([]);
     const [myProperties, setMyProperties] = useState([]);
     const userDetails = getLocalStorage(USER);
+    const nav = useNavigate();
 
     useEffect(() => {
         const fetchSaved = async () => {
             try {
                 const res = await getUserFavorites(userDetails?._id);
-                if(res.status == SUCCESS) {
+                if (res.status == SUCCESS) {
                     setSavedProperties(res.data?.map(property => property.property));
                 }
             } catch (e) {
@@ -36,7 +38,22 @@ const ProfilePage = () => {
         }
 
         fetchSaved()
-    },[])
+    }, [])
+
+    useEffect(() => {
+        const fetchMyListing = async () => {
+            try {
+                const res = await getUserProperties(userDetails?._id);
+                if (res.status == SUCCESS) {
+                    setMyProperties(res.data);
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        fetchMyListing()
+    }, [])
 
     const handleDeleteAccount = () => {
         alert('Account deleted (wire up your API call here)');
@@ -46,10 +63,17 @@ const ProfilePage = () => {
         alert(`Edit property: ${property.title}\n(wire up your edit modal/page here)`);
     };
 
-    const handleToggleAvailability = (id) => {
-        setMyProperties((prev) =>
-            prev.map((p) => p._id === id ? {...p, available: !p.available} : p)
-        );
+    const handleDeleteProperty = async (id) => {
+        const response = confirm('Are you sure you want to delete this property?');
+        if(!response) return;
+        try {
+            const res = await deleteProperty(id);
+            if (res.status == SUCCESS) {
+                nav(0)
+            }
+        } catch (e) {
+            console.error(e);
+        }
     };
 
     const tabCounts = {
@@ -99,7 +123,7 @@ const ProfilePage = () => {
                     <MyProperties
                         properties={myProperties}
                         onEdit={handleEdit}
-                        onToggleAvailability={handleToggleAvailability}
+                        deleteProperty={handleDeleteProperty}
                     />
                 )}
 
