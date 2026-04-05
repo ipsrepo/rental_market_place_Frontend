@@ -1,26 +1,30 @@
-import { useState, useEffect, useRef } from 'react';
+import {useMemo, useRef, useState} from 'react';
 import {
     BATHROOM_OPTIONS,
-    BEDROOM_OPTIONS, BER_RATINGS, INITIAL_FORM,
+    BEDROOM_OPTIONS,
+    BER_RATINGS,
+    INITIAL_FORM,
     PRICE_DISPLAY,
     PROPERTY_TYPES,
-    RENTAL_TYPES, SUCCESS
+    RENTAL_TYPES,
+    SUCCESS,
+    USER
 } from "../constants/app.constant.js";
-import {API_ENDPOINTS} from "../constants/endPoints.js";
 import {addProperty} from "../services/property.service.js";
 import {useNavigate} from "react-router-dom";
+import {getLocalStorage} from "../utils/localStorage.js";
 
 
 // ── Reusable field components ────────────────────────────────────────────────
 
-const Label = ({ children, required }) => (
+const Label = ({children, required}) => (
     <label className="block text-sm font-medium text-gray-700 mb-1.5">
         {children}
         {required && <span className="text-red ml-0.5">*</span>}
     </label>
 );
 
-const Input = ({ label, required, error, ...props }) => (
+const Input = ({label, required, error, ...props}) => (
     <div>
         {label && <Label required={required}>{label}</Label>}
         <input
@@ -33,7 +37,7 @@ const Input = ({ label, required, error, ...props }) => (
     </div>
 );
 
-const Select = ({ label, required, error, children, ...props }) => (
+const Select = ({label, required, error, children, ...props}) => (
     <div>
         {label && <Label required={required}>{label}</Label>}
         <select
@@ -48,8 +52,9 @@ const Select = ({ label, required, error, children, ...props }) => (
     </div>
 );
 
-const Toggle = ({ label, description, checked, onChange }) => (
-    <div className="flex items-center justify-between py-3 px-4 bg-gray-50 rounded-lg border border-gray-200 cursor-pointer">
+const Toggle = ({label, description, checked, onChange}) => (
+    <div
+        className="flex items-center justify-between py-3 px-4 bg-gray-50 rounded-lg border border-gray-200 cursor-pointer">
         <div>
             <p className="text-sm font-medium text-gray-800">{label}</p>
             {description && <p className="text-xs text-gray-500 mt-0.5">{description}</p>}
@@ -70,9 +75,10 @@ const Toggle = ({ label, description, checked, onChange }) => (
     </div>
 );
 
-const SectionHeader = ({ number, title, subtitle }) => (
+const SectionHeader = ({number, title, subtitle}) => (
     <div className="flex items-start gap-4 mb-5">
-        <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-sm font-bold flex-shrink-0 mt-0.5">
+        <div
+            className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-sm font-bold flex-shrink-0 mt-0.5">
             {number}
         </div>
         <div>
@@ -82,7 +88,7 @@ const SectionHeader = ({ number, title, subtitle }) => (
     </div>
 );
 
-const ImageUpload = ({ images, onAdd, onRemove, label, maxImages = 10 }) => {
+const ImageUpload = ({images, onAdd, onRemove, label, maxImages = 10}) => {
     const fileRef = useRef();
 
     const handleFiles = (e) => {
@@ -96,7 +102,8 @@ const ImageUpload = ({ images, onAdd, onRemove, label, maxImages = 10 }) => {
             <Label>{label}</Label>
             <div className="grid grid-cols-3 gap-3">
                 {images.map((img, i) => (
-                    <div key={i} className="relative aspect-video rounded-lg overflow-hidden border border-gray-200 bg-gray-100">
+                    <div key={i}
+                         className="relative aspect-video rounded-lg overflow-hidden border border-gray-200 bg-gray-100">
                         <img
                             src={typeof img === 'string' ? img : URL.createObjectURL(img)}
                             alt={`Image ${i + 1}`}
@@ -110,7 +117,8 @@ const ImageUpload = ({ images, onAdd, onRemove, label, maxImages = 10 }) => {
                             ×
                         </button>
                         {i === 0 && (
-                            <span className="absolute bottom-1 left-1 bg-primary text-white text-xs px-1.5 py-0.5 rounded font-medium">
+                            <span
+                                className="absolute bottom-1 left-1 bg-primary text-white text-xs px-1.5 py-0.5 rounded font-medium">
                 Primary
               </span>
                         )}
@@ -124,32 +132,34 @@ const ImageUpload = ({ images, onAdd, onRemove, label, maxImages = 10 }) => {
                         className="aspect-video rounded-lg border-2 border-dashed border-gray-300 hover:border-primary hover:bg-bg transition-all flex flex-col items-center justify-center gap-1 text-gray-400 hover:text-primary"
                     >
                         <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v16m8-8H4" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v16m8-8H4"/>
                         </svg>
                         <span className="text-xs font-medium">Add photo</span>
                     </button>
                 )}
             </div>
             <p className="text-xs text-gray-400 mt-2">First image will be the primary image. Max {maxImages} photos.</p>
-            <input ref={fileRef} type="file" accept="image/*" multiple className="hidden" onChange={handleFiles} />
+            <input ref={fileRef} type="file" accept="image/*" multiple className="hidden" onChange={handleFiles}/>
         </div>
     );
 };
 
-const PropertyFormPage = ({ existingProperty = null, onSubmit, onCancel }) => {
+const PropertyFormPage = ({existingProperty = null, onSubmit, onCancel}) => {
     const isEdit = !!existingProperty;
 
-    const [form,   setForm]   = useState(existingProperty || INITIAL_FORM);
+    const [form, setForm] = useState(existingProperty || INITIAL_FORM);
     const [images, setImages] = useState(existingProperty?.images || []);
     const [errors, setErrors] = useState({});
     const [saving, setSaving] = useState(false);
-    const [saved,  setSaved]  = useState(false);
+    const [saved, setSaved] = useState(false);
 
     const nav = useNavigate();
 
+    const userId = useMemo(() => getLocalStorage(USER)?._id, []);
+
     const set = (key, value) => {
-        setForm((prev) => ({ ...prev, [key]: value }));
-        if (errors[key]) setErrors((prev) => ({ ...prev, [key]: '' }));
+        setForm((prev) => ({...prev, [key]: value}));
+        if (errors[key]) setErrors((prev) => ({...prev, [key]: ''}));
     };
 
     const validate = () => {
@@ -176,7 +186,6 @@ const PropertyFormPage = ({ existingProperty = null, onSubmit, onCancel }) => {
         const errs = validate();
         if (Object.keys(errs).length > 0) {
             setErrors(errs);
-            // scroll to first error
             document.querySelector('.border-red')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
             return;
         }
@@ -184,19 +193,24 @@ const PropertyFormPage = ({ existingProperty = null, onSubmit, onCancel }) => {
         setSaving(true);
         try {
             const formData = new FormData();
-            Object.entries(form).forEach(([k, v]) => formData.append(k, v));
+
+            Object.entries(form).forEach(([k, v]) => {
+                formData.append(k, v);
+            });
+
+            formData.append('owner', userId);
+
             images.forEach((img) => {
-                if (img instanceof File) formData.append('images', img);
+                if (img instanceof File) {
+                    formData.append('images', img);
+                }
             });
 
             const response = await addProperty(formData);
 
-            if(response.status == SUCCESS){
-                nav('/profile?tab=listings')
+            if (response.status === SUCCESS) {
+                nav('/profile?tab=listings');
             }
-            await onSubmit?.(formData);
-            setSaved(true);
-            setTimeout(() => setSaved(false), 3000);
         } catch (err) {
             console.error(err);
         } finally {
@@ -217,7 +231,7 @@ const PropertyFormPage = ({ existingProperty = null, onSubmit, onCancel }) => {
                             className="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-gray-50 transition-colors"
                         >
                             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7"/>
                             </svg>
                         </button>
                         <div>
@@ -234,7 +248,7 @@ const PropertyFormPage = ({ existingProperty = null, onSubmit, onCancel }) => {
                         {saved && (
                             <span className="text-sm text-green-600 font-medium flex items-center gap-1">
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7"/>
                 </svg>
                 Saved
               </span>
@@ -247,7 +261,8 @@ const PropertyFormPage = ({ existingProperty = null, onSubmit, onCancel }) => {
                         >
                             {saving && (
                                 <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                            strokeWidth="4"/>
                                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
                                 </svg>
                             )}
@@ -262,7 +277,8 @@ const PropertyFormPage = ({ existingProperty = null, onSubmit, onCancel }) => {
 
                 {/* ── Section 1: Photos ──────────────────────────────────────────── */}
                 <div className="bg-white rounded-2xl border border-gray-200 p-6">
-                    <SectionHeader number="1" title="Photos" subtitle="Add up to 10 photos. The first photo will be your primary image." />
+                    <SectionHeader number="1" title="Photos"
+                                   subtitle="Add up to 10 photos. The first photo will be your primary image."/>
                     <ImageUpload
                         label=""
                         images={images}
@@ -274,7 +290,8 @@ const PropertyFormPage = ({ existingProperty = null, onSubmit, onCancel }) => {
 
                 {/* ── Section 2: Basic info ──────────────────────────────────────── */}
                 <div className="bg-white rounded-2xl border border-gray-200 p-6 space-y-5">
-                    <SectionHeader number="2" title="Basic information" subtitle="Give your listing a clear, descriptive title." />
+                    <SectionHeader number="2" title="Basic information"
+                                   subtitle="Give your listing a clear, descriptive title."/>
 
                     <Input
                         label="Title"
@@ -304,7 +321,7 @@ const PropertyFormPage = ({ existingProperty = null, onSubmit, onCancel }) => {
                         <div className="flex justify-between mt-1">
                             {errors.details
                                 ? <p className="text-xs text-red">{errors.details}</p>
-                                : <span />}
+                                : <span/>}
                             <span className="text-xs text-gray-400">{form.details.length}/2000</span>
                         </div>
                     </div>
@@ -321,7 +338,7 @@ const PropertyFormPage = ({ existingProperty = null, onSubmit, onCancel }) => {
 
                 {/* ── Section 3: Property type ───────────────────────────────────── */}
                 <div className="bg-white rounded-2xl border border-gray-200 p-6 space-y-5">
-                    <SectionHeader number="3" title="Property type" />
+                    <SectionHeader number="3" title="Property type"/>
 
                     <div className="grid grid-cols-3 gap-3">
                         {PROPERTY_TYPES.map((t) => (
@@ -361,13 +378,14 @@ const PropertyFormPage = ({ existingProperty = null, onSubmit, onCancel }) => {
 
                 {/* ── Section 4: Pricing ─────────────────────────────────────────── */}
                 <div className="bg-white rounded-2xl border border-gray-200 p-6 space-y-5">
-                    <SectionHeader number="4" title="Pricing" />
+                    <SectionHeader number="4" title="Pricing"/>
 
                     <div className="grid grid-cols-2 gap-4">
                         <div>
                             <Label required>Rent amount (€)</Label>
                             <div className="relative">
-                                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 font-medium text-sm">€</span>
+                                <span
+                                    className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 font-medium text-sm">€</span>
                                 <input
                                     type="number"
                                     min="0"
@@ -396,7 +414,7 @@ const PropertyFormPage = ({ existingProperty = null, onSubmit, onCancel }) => {
 
                 {/* ── Section 5: Room details ────────────────────────────────────── */}
                 <div className="bg-white rounded-2xl border border-gray-200 p-6 space-y-5">
-                    <SectionHeader number="5" title="Room details" />
+                    <SectionHeader number="5" title="Room details"/>
 
                     <div className="grid grid-cols-2 gap-4">
                         <Select
@@ -440,7 +458,7 @@ const PropertyFormPage = ({ existingProperty = null, onSubmit, onCancel }) => {
 
                 {/* ── Section 6: Features ────────────────────────────────────────── */}
                 <div className="bg-white rounded-2xl border border-gray-200 p-6 space-y-3">
-                    <SectionHeader number="6" title="Features & inclusions" />
+                    <SectionHeader number="6" title="Features & inclusions"/>
                     <Toggle
                         label="Bills included"
                         description="Electricity, gas, and/or internet included in rent"
@@ -469,7 +487,7 @@ const PropertyFormPage = ({ existingProperty = null, onSubmit, onCancel }) => {
 
                 {/* ── Section 7: Availability & BER ─────────────────────────────── */}
                 <div className="bg-white rounded-2xl border border-gray-200 p-6 space-y-5">
-                    <SectionHeader number="7" title="Availability & BER rating" />
+                    <SectionHeader number="7" title="Availability & BER rating"/>
 
                     <Input
                         label="Available from"
@@ -507,11 +525,12 @@ const PropertyFormPage = ({ existingProperty = null, onSubmit, onCancel }) => {
                     <button
                         type="submit"
                         disabled={saving}
-                        className="flex-1 py-3 bg-primary hover:bg-primary disabled:opacity-60 text-white font-medium rounded-xl transition-colors flex items-center justify-center gap-2"
+                        className="flex-1 py-3 cursor-pointer bg-primary hover:bg-primary disabled:opacity-60 text-white font-medium rounded-xl transition-colors flex items-center justify-center gap-2"
                     >
                         {saving && (
                             <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                        strokeWidth="4"/>
                                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
                             </svg>
                         )}
