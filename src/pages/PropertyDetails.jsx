@@ -2,9 +2,10 @@ import {useEffect, useState} from "react";
 import {useNavigate, useParams} from "react-router-dom";
 import {getPropertyById} from "../services/property.service";
 import {addFavorite, deleteFavorite, getUserFavorites} from "../services/favorite.service";
-import {sendMessage} from "../services/message.service";
+import {sendMail} from "../services/mail.service.js";
 import {SUCCESS, USER} from "../constants/app.constant";
 import {getLocalStorage} from "../utils/localStorage";
+import {getUser} from "../services/user.service.js";
 
 const Icon = ({d, className = "w-5 h-5", filled = false}) => (
     <svg className={className} fill={filled ? "currentColor" : "none"} viewBox="0 0 24 24"
@@ -58,7 +59,7 @@ const capitalize = (s) => s ? s.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpp
 // ── Badge ─────────────────────────────────────────────────────────────────────
 const Badge = ({children, green}) => (
     <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium ${
-        green ? 'bg-[#62be6320] text-[#3a7a3b]' : 'bg-[#e0e8e154] text-[#484e48] border border-[#dedfe7]'
+        green ? 'bg-[#62be6320] text-[#3a7a3b]' : 'bg-bg text-text border border-border'
     }`}>
         {children}
     </span>
@@ -66,14 +67,14 @@ const Badge = ({children, green}) => (
 
 // ── Detail row ────────────────────────────────────────────────────────────────
 const DetailRow = ({icon, label, value, highlight}) => (
-    <div className="flex items-start gap-3 py-3 border-b border-[#dedfe7] last:border-0">
+    <div className="flex items-start gap-3 py-3 border-b border-border last:border-0">
         <div
-            className="w-8 h-8 rounded-lg bg-[#e0e8e154] flex items-center justify-center flex-shrink-0 text-[#62be63]">
+            className="w-8 h-8 rounded-lg bg-bg flex items-center justify-center flex-shrink-0 text-primary">
             <Icon d={Icons[icon]} className="w-4 h-4"/>
         </div>
         <div className="flex-1">
-            <p className="text-xs text-[#484e48] opacity-70">{label}</p>
-            <p className={`text-sm font-semibold mt-0.5 ${highlight ? 'text-[#62be63]' : 'text-[#212234]'}`}>{value}</p>
+            <p className="text-xs text-text opacity-70">{label}</p>
+            <p className={`text-sm font-semibold mt-0.5 ${highlight ? 'text-primary' : 'text-accent'}`}>{value}</p>
         </div>
     </div>
 );
@@ -90,10 +91,35 @@ const PropertyDetails = () => {
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [sending, setSending] = useState(false);
     const [messageSent, setMessageSent] = useState(false);
-    const [messageData, setMessageData] = useState({name: '', email: '', phone: '', message: ''});
+    const [messageData, setMessageData] = useState({name: '', email: '', mobile: '', message: ''});
+    const [owner, setOwner] = useState({})
 
     const user = getLocalStorage(USER);
     const userId = user?._id;
+
+    useEffect(() => {
+        setMessageData({
+            name: user?.name,
+            email: user?.email,
+            mobile: user?.mobile,
+            message: `Hi, I'm interested in ${property?.title ?? ''}`
+        })
+    }, []);
+
+    useEffect(() => {
+        const fetchOwner = async () => {
+            try {
+                const res = await getUser(property.owner);
+                if (res.status == SUCCESS) {
+                    setOwner(res?.data?.doc);
+                }
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        if(property?.owner) fetchOwner()
+    }, [property]);
 
     useEffect(() => {
         const fetchProperty = async () => {
@@ -139,13 +165,13 @@ const PropertyDetails = () => {
         e.preventDefault();
         setSending(true);
         try {
-            const res = await sendMessage({propertyId: id, ownerId: property?.owner?._id, ...messageData});
-            if (res.status === SUCCESS) {
+            const res = await sendMail(property._id, messageData);
+            if (res.status == SUCCESS) {
                 setMessageSent(true);
                 setTimeout(() => {
                     setShowModal(false);
                     setMessageSent(false);
-                    setMessageData({name: '', email: '', phone: '', message: ''});
+                    setMessageData({name: '', email: '', mobile: '', message: ''});
                 }, 2500);
             }
         } catch (e) {
@@ -164,26 +190,28 @@ const PropertyDetails = () => {
     // ── Loading ───────────────────────────────────────────────────────────────
     if (loading) return (
         <div className="flex justify-center items-center h-96">
-            <div className="w-12 h-12 rounded-full border-4 border-[#e0e8e154] border-t-[#62be63] animate-spin"/>
+            <div className="w-12 h-12 rounded-full border-4 border-bg border-t-primary animate-spin"/>
         </div>
     );
 
     if (!property) return (
         <div className="text-center p-16">
-            <p className="text-[#c10007] font-medium mb-4">Property not found</p>
-            <button onClick={() => navigate('/')} className="bg-[#62be63] text-white px-6 py-2 rounded-lg">Go Home
+            <p className="text-red font-medium mb-4">Property not found</p>
+            <button onClick={() => navigate('/')} className="bg-primary text-white px-6 py-2 rounded-lg">Go Home
             </button>
         </div>
     );
 
+    document.title = property.title || 'Rental Market Place';
+
     return (
-        <div className="min-h-screen bg-[#e0e8e154]">
+        <div className="bg-bg w-3/4 max-w-[1280px] p-4">
             <div className="max-w-6xl mx-auto px-4 py-8">
 
                 {/* ── Back bar ─────────────────────────────────────────────── */}
                 <button
                     onClick={() => navigate(-1)}
-                    className="mb-6 flex items-center gap-2 text-[#484e48] hover:text-[#62be63] transition-colors text-sm font-medium"
+                    className="mb-6 flex items-center gap-2 text-text hover:text-primary transition-colors text-sm font-medium cursor-pointer"
                 >
                     <Icon d={Icons.back} className="w-4 h-4"/> Back to listings
                 </button>
@@ -195,31 +223,17 @@ const PropertyDetails = () => {
 
                         {/* Main image */}
                         <div
-                            className="relative bg-[#212234] rounded-2xl overflow-hidden aspect-[16/10] shadow-[0_8px_20px_8px_#21223308]">
+                            className="relative bg-accent rounded-2xl overflow-hidden aspect-[16/10] shadow-[0_8px_20px_8px_#21223308]">
                             <img
                                 src={allImages[currentImageIndex]}
                                 alt={property.title}
                                 className="w-full h-full object-cover"
                             />
 
-                            {/* Favourite */}
-                            <button
-                                onClick={handleFavoriteToggle}
-                                className="absolute top-4 right-4 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-md hover:scale-105 transition-transform"
-                            >
-                                <Icon
-                                    d={Icons.heart}
-                                    className="w-5 h-5"
-                                    filled={isFavorite}
-                                />
-                                {/* inline color via style since we can't use arbitrary Tailwind fill */}
-                                <style>{`.fav-icon { color: ${isFavorite ? '#c10007' : '#9ca3af'}; }`}</style>
-                            </button>
-
                             {/* New badge */}
                             {property.isnew && (
                                 <span
-                                    className="absolute top-4 left-4 bg-[#62be63] text-white text-xs font-bold px-3 py-1 rounded-full">
+                                    className="absolute top-4 left-4 bg-primary text-white text-xs font-bold px-3 py-1 rounded-full">
                                     NEW
                                 </span>
                             )}
@@ -236,12 +250,12 @@ const PropertyDetails = () => {
                             {hasMultiple && (
                                 <>
                                     <button onClick={prevImage}
-                                            className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-white/85 rounded-full flex items-center justify-center hover:bg-white transition">
-                                        <Icon d={Icons.chevLeft} className="w-4 h-4 text-[#212234]"/>
+                                            className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-white/85 rounded-full flex cursor-pointer items-center justify-center hover:bg-white transition">
+                                        <Icon d={Icons.chevLeft} className="w-4 h-4 text-accent"/>
                                     </button>
                                     <button onClick={nextImage}
-                                            className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-white/85 rounded-full flex items-center justify-center hover:bg-white transition">
-                                        <Icon d={Icons.chevRight} className="w-4 h-4 text-[#212234]"/>
+                                            className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-white/85 rounded-full flex cursor-pointer items-center justify-center hover:bg-white transition">
+                                        <Icon d={Icons.chevRight} className="w-4 h-4 text-accent"/>
                                     </button>
                                 </>
                             )}
@@ -254,8 +268,8 @@ const PropertyDetails = () => {
                                     <button
                                         key={i}
                                         onClick={() => setCurrentImageIndex(i)}
-                                        className={`flex-shrink-0 w-20 h-16 rounded-xl overflow-hidden border-2 transition-all ${
-                                            i === currentImageIndex ? 'border-[#62be63] scale-105' : 'border-transparent opacity-70 hover:opacity-100'
+                                        className={`flex-shrink-0 w-20 h-16 rounded-xl overflow-hidden border-2 transition-all cursor-pointer ${
+                                            i === currentImageIndex ? 'border-primary scale-105' : 'border-transparent opacity-70 hover:opacity-100'
                                         }`}
                                     >
                                         <img src={img} alt="" className="w-full h-full object-cover"/>
@@ -266,18 +280,18 @@ const PropertyDetails = () => {
 
                         {/* Description */}
                         <div className="bg-white rounded-2xl p-6 shadow-[0_8px_20px_8px_#21223308]">
-                            <h2 className="text-lg font-bold text-[#212234] mb-3 flex items-center gap-2">
-                                <Icon d={Icons.info} className="w-5 h-5 text-[#62be63]"/>
+                            <h2 className="text-lg font-bold text-accent mb-3 flex items-center gap-2">
+                                <Icon d={Icons.info} className="w-5 h-5 text-primary"/>
                                 About this property
                             </h2>
-                            <p className="text-[#484e48] text-sm leading-relaxed">{property.details}</p>
+                            <p className="text-text text-sm leading-relaxed">{property.details}</p>
                         </div>
 
                         {/* Tags */}
                         {property.tags && property.tags.length > 0 && (
                             <div className="bg-white rounded-2xl p-6 shadow-[0_8px_20px_8px_#21223308]">
-                                <h2 className="text-lg font-bold text-[#212234] mb-3 flex items-center gap-2">
-                                    <Icon d={Icons.tag} className="w-5 h-5 text-[#62be63]"/>
+                                <h2 className="text-lg font-bold text-accent mb-3 flex items-center gap-2">
+                                    <Icon d={Icons.tag} className="w-5 h-5 text-primary"/>
                                     Amenities & features
                                 </h2>
                                 <div className="flex flex-wrap gap-2">
@@ -300,17 +314,17 @@ const PropertyDetails = () => {
                                 {property.available && <Badge green>Available</Badge>}
                             </div>
 
-                            <h1 className="text-xl font-bold text-[#212234] leading-snug mb-3">{property.title}</h1>
+                            <h1 className="text-xl font-bold text-accent leading-snug mb-3">{property.title}</h1>
 
-                            <p className="text-[#484e48] text-sm flex items-center gap-1.5 mb-4">
-                                <Icon d={Icons.location} className="w-4 h-4 text-[#62be63] flex-shrink-0"/>
+                            <p className="text-text text-sm flex items-center gap-1.5 mb-4">
+                                <Icon d={Icons.location} className="w-4 h-4 text-primary flex-shrink-0"/>
                                 {property.location}
                             </p>
 
-                            <div className="flex items-baseline gap-1 pb-4 border-b border-[#dedfe7]">
+                            <div className="flex items-baseline gap-1 pb-4 border-b border-border">
                                 <span
-                                    className="text-4xl font-bold text-[#62be63]">€{property.price?.toLocaleString('en-IE')}</span>
-                                <span className="text-sm text-[#484e48]">/ {property.pricedisplay}</span>
+                                    className="text-4xl font-bold text-primary">€{property.price?.toLocaleString('en-IE')}</span>
+                                <span className="text-sm text-text">/ {property.pricedisplay}</span>
                             </div>
 
                             {/* Quick stats row */}
@@ -320,10 +334,10 @@ const PropertyDetails = () => {
                                     {icon: 'bath', val: property.bathrooms, label: 'Baths'},
                                     {icon: 'ber', val: property.berrating?.toUpperCase() || '—', label: 'BER'},
                                 ].map(({icon, val, label}) => (
-                                    <div key={label} className="bg-[#e0e8e154] rounded-xl p-3 text-center">
-                                        <Icon d={Icons[icon]} className="w-4 h-4 text-[#62be63] mx-auto mb-1"/>
-                                        <p className="text-base font-bold text-[#212234]">{val}</p>
-                                        <p className="text-xs text-[#484e48] opacity-70">{label}</p>
+                                    <div key={label} className="bg-bg rounded-xl p-3 text-center">
+                                        <Icon d={Icons[icon]} className="w-4 h-4 text-primary mx-auto mb-1"/>
+                                        <p className="text-base font-bold text-accent">{val}</p>
+                                        <p className="text-xs text-text opacity-70">{label}</p>
                                     </div>
                                 ))}
                             </div>
@@ -331,7 +345,7 @@ const PropertyDetails = () => {
 
                         {/* Property details card */}
                         <div className="bg-white rounded-2xl p-6 shadow-[0_8px_20px_8px_#21223308]">
-                            <h2 className="text-base font-bold text-[#212234] mb-2">Property details</h2>
+                            <h2 className="text-base font-bold text-accent mb-2">Property details</h2>
 
                             <DetailRow icon="calendar" label="Available from"
                                        value={formatDate(property.availablefrom)}/>
@@ -356,7 +370,7 @@ const PropertyDetails = () => {
                                         <Icon d={Icons.ber} className="w-4 h-4"/>
                                     </div>
                                     <div>
-                                        <p className="text-xs text-[#484e48] opacity-70">BER Rating</p>
+                                        <p className="text-xs text-text opacity-70">BER Rating</p>
                                         <span
                                             className="text-xs font-bold px-2 py-0.5 rounded text-white mt-0.5 inline-block"
                                             style={{background: BerColor[property.berrating] || '#888'}}>
@@ -368,24 +382,24 @@ const PropertyDetails = () => {
                         </div>
 
                         {/* Owner card */}
-                        {property.owner && (
+                        {owner && (
                             <div className="bg-white rounded-2xl p-6 shadow-[0_8px_20px_8px_#21223308]">
-                                <h2 className="text-base font-bold text-[#212234] mb-4 flex items-center gap-2">
-                                    <Icon d={Icons.user} className="w-4 h-4 text-[#62be63]"/>
+                                <h2 className="text-base font-bold text-accent mb-4 flex items-center gap-2">
+                                    <Icon d={Icons.user} className="w-4 h-4 text-primary"/>
                                     Hosted by
                                 </h2>
                                 <div className="flex items-center gap-3">
                                     <div
-                                        className="w-12 h-12 rounded-full bg-[#62be6320] flex items-center justify-center text-[#62be63] text-lg font-bold flex-shrink-0">
-                                        {property.owner.name?.[0]?.toUpperCase()}
+                                        className="w-12 h-12 rounded-full bg-[#62be6320] flex items-center justify-center text-primary text-lg font-bold flex-shrink-0">
+                                        {owner.name?.[0]?.toUpperCase()}
                                     </div>
                                     <div>
-                                        <p className="font-semibold text-[#212234]">{property.owner.name}</p>
+                                        <p className="font-semibold text-accent">{owner.name}</p>
                                         {property.ownerrating && (
                                             <div className="flex items-center gap-1 mt-0.5">
                                                 <Icon d={Icons.star} className="w-3.5 h-3.5 text-yellow-400" filled/>
                                                 <span
-                                                    className="text-xs text-[#484e48]">{property.ownerrating.toFixed(1)} rating</span>
+                                                    className="text-xs text-text">{property.ownerrating.toFixed(1)} rating</span>
                                             </div>
                                         )}
                                     </div>
@@ -396,7 +410,7 @@ const PropertyDetails = () => {
                         {/* Contact button */}
                         <button
                             onClick={() => setShowModal(true)}
-                            className="w-full bg-[#62be63] hover:bg-[#4ea84f] text-white font-semibold py-3.5 px-6 rounded-xl transition-colors flex items-center justify-center gap-2 shadow-[0_8px_20px_8px_#21223308]"
+                            className="w-full bg-primary hover:opacity-90 cursor-pointer text-white font-semibold py-3.5 px-6 rounded-xl transition-colors flex items-center justify-center gap-2 shadow-[0_8px_20px_8px_#21223308]"
                         >
                             <Icon d={Icons.mail} className="w-5 h-5"/>
                             Contact Host
@@ -405,10 +419,10 @@ const PropertyDetails = () => {
                         {/* Favourite button */}
                         <button
                             onClick={handleFavoriteToggle}
-                            className={`w-full font-semibold py-3 px-6 rounded-xl transition-colors flex items-center justify-center gap-2 border-2 ${
+                            className={`w-full font-semibold py-3 px-6 rounded-xl cursor-pointer transition-colors flex items-center justify-center gap-2 border-2 ${
                                 isFavorite
-                                    ? 'border-[#c10007] text-[#c10007] hover:bg-red-50'
-                                    : 'border-[#dedfe7] text-[#484e48] hover:border-[#62be63] hover:text-[#62be63]'
+                                    ? 'border-red text-red hover:bg-red-50'
+                                    : 'border-border text-text hover:border-primary hover:text-primary'
                             }`}
                         >
                             <Icon d={Icons.heart} className="w-5 h-5" filled={isFavorite}/>
@@ -424,16 +438,16 @@ const PropertyDetails = () => {
                     <div className="bg-white rounded-2xl w-full max-w-md max-h-[92vh] overflow-y-auto shadow-2xl">
 
                         {/* Modal header */}
-                        <div className="flex justify-between items-center p-5 border-b border-[#dedfe7]">
+                        <div className="flex justify-between items-center p-5 border-b border-border">
                             <div>
-                                <h2 className="text-lg font-bold text-[#212234]">Send message to host</h2>
-                                <p className="text-xs text-[#484e48] mt-0.5 opacity-70">{property.title}</p>
+                                <h2 className="text-lg font-bold text-accent">Send message to host</h2>
+                                <p className="text-xs text-text mt-0.5 opacity-70">{property.title}</p>
                             </div>
                             <button
                                 onClick={() => setShowModal(false)}
-                                className="w-8 h-8 rounded-full bg-[#e0e8e154] flex items-center justify-center hover:bg-gray-200 transition"
+                                className="w-8 h-8 rounded-full bg-bg flex items-center justify-center hover:bg-gray-200 transition"
                             >
-                                <Icon d={Icons.close} className="w-4 h-4 text-[#212234]"/>
+                                <Icon d={Icons.close} className="w-4 h-4 text-accent"/>
                             </button>
                         </div>
 
@@ -441,10 +455,10 @@ const PropertyDetails = () => {
                             <div className="p-10 text-center">
                                 <div
                                     className="w-16 h-16 bg-[#62be6320] rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <Icon d={Icons.check} className="w-8 h-8 text-[#62be63]"/>
+                                    <Icon d={Icons.check} className="w-8 h-8 text-primary"/>
                                 </div>
-                                <h3 className="text-xl font-bold text-[#212234] mb-2">Message Sent!</h3>
-                                <p className="text-[#484e48] text-sm">The host will respond to you shortly.</p>
+                                <h3 className="text-xl font-bold text-accent mb-2">Message Sent!</h3>
+                                <p className="text-text text-sm">The host will respond to you shortly.</p>
                             </div>
                         ) : (
                             <form onSubmit={handleSendMessage} className="p-5 space-y-4">
@@ -469,23 +483,20 @@ const PropertyDetails = () => {
                                         default: user?.email
                                     },
                                     {
-                                        label: 'Phone',
-                                        name: 'phone',
+                                        label: 'mobile',
+                                        name: 'mobile',
                                         type: 'tel',
-                                        icon: 'phone',
+                                        icon: 'mobile',
                                         required: false,
                                         placeholder: '+353 87 123 4567',
                                         default: user?.mobile
                                     },
                                 ].map(({label, name, type, icon, required, placeholder, default: def}) => (
                                     <div key={name}>
-                                        <label className="block text-sm font-medium text-[#212234] mb-1.5">
-                                            {label} {required && <span className="text-[#c10007]">*</span>}
+                                        <label className="block text-sm font-medium text-accent mb-1.5">
+                                            {label} {required && <span className="text-red">*</span>}
                                         </label>
                                         <div className="relative">
-                                            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-[#62be63]">
-                                                <Icon d={Icons[icon]} className="w-4 h-4"/>
-                                            </div>
                                             <input
                                                 type={type}
                                                 name={name}
@@ -494,15 +505,15 @@ const PropertyDetails = () => {
                                                 placeholder={placeholder}
                                                 value={messageData[name]}
                                                 onChange={(e) => setMessageData(p => ({...p, [name]: e.target.value}))}
-                                                className="w-full pl-9 pr-3.5 py-2.5 border border-[#dedfe7] rounded-lg text-sm text-[#212234] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#62be63] focus:border-transparent transition"
+                                                className="w-full pl-9 pr-3.5 py-2.5 border border-border rounded-lg text-sm text-accent placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition"
                                             />
                                         </div>
                                     </div>
                                 ))}
 
                                 <div>
-                                    <label className="block text-sm font-medium text-[#212234] mb-1.5">
-                                        Message <span className="text-[#c10007]">*</span>
+                                    <label className="block text-sm font-medium text-accent mb-1.5">
+                                        Message <span className="text-red">*</span>
                                     </label>
                                     <textarea
                                         name="message"
@@ -511,14 +522,14 @@ const PropertyDetails = () => {
                                         placeholder={`Hi, I'm interested in "${property.title}"...`}
                                         value={messageData.message}
                                         onChange={(e) => setMessageData(p => ({...p, message: e.target.value}))}
-                                        className="w-full px-3.5 py-2.5 border border-[#dedfe7] rounded-lg text-sm text-[#212234] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#62be63] focus:border-transparent transition resize-none"
+                                        className="w-full px-3.5 py-2.5 border border-border rounded-lg text-sm text-accent placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition resize-none"
                                     />
                                 </div>
 
                                 <button
                                     type="submit"
                                     disabled={sending}
-                                    className="w-full bg-[#62be63] hover:bg-[#4ea84f] disabled:opacity-60 text-white font-semibold py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
+                                    className="w-full bg-primary hover:bg-[#4ea84f] disabled:opacity-60 text-white font-semibold py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
                                 >
                                     {sending ? (
                                         <>
