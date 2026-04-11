@@ -12,6 +12,17 @@ export default defineConfig({
     svgr(),
     babel({ presets: [reactCompilerPreset()] })
   ],
+  test: {
+    environment: 'jsdom',
+    setupFiles: ['./src/__tests__/setup.js'],
+    globals: true,
+    css: false,
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'lcov'],
+      include: [],
+    },
+  },
   base: "/rental_market_place_Frontend/",
   server: {
     host: true,
