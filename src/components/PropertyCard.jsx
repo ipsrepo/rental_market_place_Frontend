@@ -129,7 +129,7 @@ const PropertyCard = ({property}) => {
                         {rentaltype}
                     </span>
                         {billsincluded && (
-                            <span className="bg-green-100 text-primary text-xs font-medium px-2 py-1 rounded">
+                            <span className="bg-bg text-primary text-xs font-medium px-2 py-1 rounded">
                             Bills included
                         </span>
                         )}
@@ -172,7 +172,7 @@ const PropertyCard = ({property}) => {
                     {tags && tags.length > 0 && (
                         <div className="mt-3 flex flex-wrap gap-1">
                             {tags.slice(0, 3).map((tag, index) => (
-                                <span key={index} className="bg-gray-100 text-xs text-gray-600 px-2 py-1 rounded">
+                                <span key={index} className="bg-gray-100 text-xs text-accent px-2 py-1 rounded">
                                 {tag}
                             </span>
                             ))}
@@ -202,7 +202,7 @@ const PropertyCard = ({property}) => {
                         {berrating && (
                             <div className="flex items-center">
                                 <span
-                                    className="bg-gray-200 text-xs font-bold px-1.5 py-0.5 rounded">BER {berrating}</span>
+                                    className="bg-bg text-xs font-bold px-1.5 py-0.5 rounded">BER {berrating}</span>
                             </div>
                         )}
                     </div>
