@@ -2,6 +2,10 @@ import axiosInstance from "./API/axiosInstance.js";
 import {API_ENDPOINTS} from "../constants/endPoints.js";
 
 
-export const createUser = (user) => axiosInstance.post(`${API_ENDPOINTS.USER}/signup`, user);
+const API = API_ENDPOINTS.USER;
 
-export const loginUser = (user) => axiosInstance.post(`${API_ENDPOINTS.USER}/login`, user);
+export const createUser = (user) => axiosInstance.post(`${API}/signup`, user);
+
+export const loginUser = (user) => axiosInstance.post(`${API}/login`, user);
+
+export const getUser = (userId) => axiosInstance.get(`${API}/${userId}`);
