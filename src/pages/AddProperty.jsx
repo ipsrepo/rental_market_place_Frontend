@@ -1,4 +1,4 @@
-import {useMemo, useRef, useState} from 'react';
+import {useEffect, useMemo, useRef, useState} from 'react';
 import {
     BATHROOM_OPTIONS,
     BEDROOM_OPTIONS,
@@ -14,7 +14,6 @@ import {addProperty, updateProperty} from "../services/property.service.js";
 import {useNavigate, useLocation} from "react-router-dom";
 import {getLocalStorage} from "../utils/localStorage.js";
 
-// ── Reusable components ───────────────────────────────────────────────────────
 
 const Label = ({children, required}) => (
     <label className="block text-sm font-medium text-accent mb-1.5">
@@ -139,30 +138,42 @@ const ImageUpload = ({images, onAdd, onRemove, maxImages = 10}) => {
     );
 };
 
-// ══════════════════════════════════════════════════════════════════════════════
 const PropertyFormPage = () => {
     const nav = useNavigate();
     const location = useLocation();
 
-    // Read existing property from router state — set by MyProperties handleEdit
     const existingProperty = location.state?.property || null;
     const isEdit = !!existingProperty;
 
+
+
     const userId = useMemo(() => getLocalStorage(USER)?._id, []);
+
+    useEffect(() => {
+        if (!isEdit) {
+            setForm(INITIAL_FORM);
+            setImages([]);
+            setErrors({});
+        }
+    }, [isEdit]);
 
     const [form, setForm] = useState(() => {
         if (!existingProperty) return INITIAL_FORM;
         return {
             ...INITIAL_FORM,
             ...existingProperty,
-            // Format date correctly for input[type=date]
             availablefrom: existingProperty.availablefrom
                 ? new Date(existingProperty.availablefrom).toISOString().split('T')[0]
                 : '',
         };
     });
 
-    const [images, setImages] = useState(existingProperty?.images || []);
+    const [images, setImages] = useState(() => {
+        if (!existingProperty) return [];
+        const primary = existingProperty.primaryimage ? [existingProperty.primaryimage] : [];
+        const rest    = existingProperty.images || [];
+        return [...primary, ...rest];
+    });
     const [errors, setErrors] = useState({});
     const [saving, setSaving] = useState(false);
     const [saved, setSaved] = useState(false);
@@ -209,7 +220,7 @@ const PropertyFormPage = () => {
                 ? await updateProperty(existingProperty._id, formData)
                 : await addProperty(formData);
 
-            if (response.status === SUCCESS) {
+            if (response.status == SUCCESS) {
                 setSaved(true);
                 setTimeout(() => nav('/profile?tab=listings'), 800);
             }
