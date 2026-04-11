@@ -10,4 +10,5 @@ export const loginUser = (user) => axiosInstance.post(`${API}/login`, user);
 
 export const getUser = (userId) => axiosInstance.get(`${API}/${userId}`);
 
-export const deleteUser = (userId) => axiosInstance.delete(`${API}/${userId}`);
+export const deleteUser
+    = (userId) => axiosInstance.delete(`${API}/${userId}`);

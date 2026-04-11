@@ -35,7 +35,7 @@ const CreateAccount = () => {
         }
         try {
             const res = await createUser(formData);
-            if (res.status === SUCCESS) {
+            if (res.status == SUCCESS) {
                 nav('/login')
             }
         } catch (error) {

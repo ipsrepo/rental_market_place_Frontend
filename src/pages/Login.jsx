@@ -74,7 +74,7 @@ const Login = () => {
                 </div>
 
                 <label className="flex gap-2 items-center cursor-pointer">
-                        <input type="checkbox" className=""/>
+                        <input type="checkbox" className="" checked={true}/>
                         <span>Remember me</span>
                 </label>
 
