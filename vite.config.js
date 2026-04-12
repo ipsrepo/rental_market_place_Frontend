@@ -22,6 +22,7 @@ export default defineConfig({
       reporter: ['text', 'lcov'],
       include: [
         'src/components/Modal.jsx',
+        'src/pages/Profile/MyProperties.jsx',
       ],
     },
   },
