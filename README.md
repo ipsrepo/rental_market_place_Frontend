@@ -1,20 +1,64 @@
-# Rental Marketplace - Frontend
 <img width="701" height="143" alt="image" src="https://github.com/user-attachments/assets/7c7f55c0-f99d-4f3a-8150-75cd3af0ea9c" />
 
 
-A full-stack rental property platform built with React 19, Redux Toolkit, and Tailwind CSS, focused on scalable and maintainable frontend architecture.
-Users can browse listings, view detailed property pages, save favourites, and send enquiries, while authenticated users manage their own properties.
+# Rental Marketplace Frontend - B9IS123 PROGRAMMING FOR INFORMATION SYSTEMS
+
+
+## Project Overview
+
+Rental Marketplace is a full-stack web application that connects property owners with potential tenants. The frontend is a single-page React application that provides a clean, responsive interface for users to browse available rental properties, view detailed listings, save favourites, and contact hosts directly  - without ever leaving the app.
+
+The UI is built around Ireland's rental market conventions  - supporting BER energy ratings (A1–G), EUR pricing per week or month, and locale-formatted dates and currency.
 
 The app integrates with a Node.js/Express backend for authentication, property management, and API handling.
-Emphasis is placed on clean state management, reusable components, and performance optimization.
+Emphasis is placed on clean state management, reusable components, and performance optimization which is hosted on Vercel
 
 
+**Live:** https://ipsrepo.github.io/rental_market_place_Frontend
 
-🔗 **Live:** https://ipsrepo.github.io/rental_market_place_Frontend
+**Backend API Deployed Link:** https://rental-market-place-backend.vercel.app/
 
-🔗 **Backend API Deployed Link:** https://rental-market-place-backend.vercel.app/
+**Backend Repo:** https://github.com/ipsrepo/rental_market_place_Backend
 
-🔗 **Backend Repo:** https://github.com/ipsrepo/rental_market_place_Backend
+---
+
+## Problem Statement
+
+Finding rental accommodation in Ireland is a time-consuming, fragmented experience. Prospective tenants have to visit multiple platforms, manually track favourites, and contact landlords through slow email threads.
+
+This project addresses those pain points by providing:
+
+- A single searchable interface to browse all available properties
+- Instant visibility of key details  - BER rating, furnished status, bills included, available-from date
+- A one-click enquiry system that emails the property owner directly
+- A personal dashboard where tenants can track saved properties and owners can manage their listings
+
+---
+
+## Features
+
+### For All Visitors
+- Browse all active property listings in a responsive card grid
+- View full property details  - image carousel, description, all attributes
+- See property type, rental type, BER energy rating with colour coding
+- View the host's name and profile initial
+
+### For Registered Users
+- Sign up and log in with email and password
+- Save properties to favourites  - persisted via API
+- Contact the property host via an in-app enquiry form (sends a real email)
+- View and manage saved properties from the profile dashboard
+
+### For Property Owners
+- Create new property listings with up to 10 images (uploaded to Cloudinary)
+- Edit existing listings  - form pre-fills from existing data
+- Delete listings with a confirmation step
+- Manage all owned listings from the "My Properties" tab
+
+### Profile Dashboard
+- 3-tab layout: Profile info · Saved Properties · My Properties
+- Tab badge counts for saved and owned listings
+- Account deletion with a "TYPE DELETE" safety confirmation
 
 ---
 
@@ -33,8 +77,88 @@ Emphasis is placed on clean state management, reusable components, and performan
 ---
 
 
+## 📁 Project Structure
 
-## ⚡ Getting Started
+```
+src/
+├── assets/            # Logo, SVGs
+├── components/        # Reusable UI (Button, Input, Modal, PropertyCard, AuthCard)
+├── constants/         # App constants, form defaults, API endpoints
+├── layouts/           # MainLayout, Header, ProfileMenu
+├── pages/             # Route-level page components
+├── services/          # Axios API service modules
+└── utils/             # localStorage, date, currency helpers
+```
+
+---
+
+## Implementation Steps
+
+### Step 1 — Project Scaffolding
+- Initialised project with `npm create vite@latest` using the React template
+- Configured Tailwind CSS v4 with PostCSS
+- Added `vite-plugin-svgr` to import SVG files as React components
+- Set up ESLint with `react-hooks` and `react-refresh` plugins
+- Configured `basename` in React Router for GitHub Pages subdirectory deployment
+
+### Step 2 — Routing Setup
+- Defined all routes in `src/app/router/index.jsx` using `createBrowserRouter`
+- Used a nested route structure with `MainLayout` as the parent (provides Header + Outlet)
+- Separated auth pages (Login, CreateAccount) as standalone routes outside the main layout
+
+### Step 3 — Axios Instance & Services
+- Created a shared Axios instance in `services/API/axiosInstance.js`
+- Added a request interceptor to inject the JWT Bearer token from localStorage automatically
+- Added a response interceptor to unwrap `response.data` so all service functions return clean data
+- Built service modules for each resource: `property`, `favorite`, `user`, `mail`
+
+### Step 4 — Auth Flow
+- Built Login and CreateAccount pages using the shared `AuthCard` component
+- On success, stored JWT token and user object to localStorage using `TOKEN` and `USER` keys
+- Header reads the token to conditionally render Sign In links vs. the ProfileMenu dropdown
+- All protected actions (add property, favourite, contact host) check for token and redirect to `/login` if absent
+
+### Step 5 — Property Listing (Home Page)
+- Fetched all properties from `GET /api/v1/property` on mount
+- For logged-in users, fetched their favourites and merged `ismyfavorite` flag onto each property
+- Rendered results in a 2-column `PropertyCard` grid
+- `PropertyCard` displays primary image, price, location, BER badge, beds/baths, and a heart toggle
+
+### Step 6 — Property Detail Page
+- Built a two-column layout: image area (left 3/5) and info panel (right 2/5)
+- Implemented an image carousel with previous/next buttons, dot counter, and clickable thumbnails
+- Fetched owner details separately via `getUser(property.owner)` to display the host card
+- Implemented favourite toggle using `addFavorite` / `deleteFavorite` service calls
+- "Contact Host" button opens a Modal with an enquiry form pre-filled from the logged-in user's data
+- Enquiry form POSTs to `POST /api/v1/mail/:propertyId` and shows a success state on completion
+
+### Step 7 — Add / Edit Property Form
+- Built a multi-section form with numbered section headers (Basic Info, Details, Images, etc.)
+- Used custom `Toggle` components for boolean fields (furnished, bills included, available, etc.)
+- Sent form data as `multipart/form-data` to support image file upload
+- Used React Router `location.state` to pass existing property data when editing
+- Converted string values from FormData back to correct types (booleans, numbers) before submission
+
+### Step 8 — Profile Dashboard
+- Built a 3-tab interface using URL search params (`?tab=profile/saved/listings`)
+- **Profile tab** — displays name, email, mobile; danger zone with delete account flow
+- **Saved Properties tab** — fetches and displays user's favourited listings
+- **My Properties tab** — fetches owner's listings; Edit navigates to AddProperty with pre-filled state; Delete triggers a confirmation Modal
+
+### Step 9 — Constants & Utilities
+- Centralised all enums, options, and form defaults in `app.constant.js`
+- Built `formatEURO` using `Intl.NumberFormat` for consistent Irish currency display
+- Built `formatDate` and `formatJoinDate` using `Intl.DateTimeFormat` for locale-correct dates
+- Wrapped localStorage with helper functions (get/set/delete) for safe JSON parsing
+
+### Step 10 — CI/CD Deployment
+- Wrote a GitHub Actions workflow (`.github/workflows/deploy.yml`)
+- On every push to `main`: install dependencies, build with `VITE_API_BASE_URL` from GitHub Secrets, upload `./dist` to GitHub Pages
+- Configured `homepage` in `package.json` and router `basename` to match the GitHub Pages subdirectory path
+
+---
+
+## Installation and Setup
 
 ### 1. Clone & Install
 
@@ -71,22 +195,7 @@ npm run deploy     # Deploy to GitHub Pages
 
 ---
 
-## 📁 Project Structure
-
-```
-src/
-├── assets/            # Logo, SVGs
-├── components/        # Reusable UI (Button, Input, Modal, PropertyCard, AuthCard)
-├── constants/         # App constants, form defaults, API endpoints
-├── layouts/           # MainLayout, Header, ProfileMenu
-├── pages/             # Route-level page components
-├── services/          # Axios API service modules
-└── utils/             # localStorage, date, currency helpers
-```
-
----
-
-## 🛣 Pages
+## Pages
 
 | Route | Page | Auth Required |
 |---|---|---|
@@ -99,7 +208,7 @@ src/
 
 ---
 
-## 🧩 Components
+## Components
 
 **`PropertyCard`** — Listing card with image, price, location, type badges, and favourite toggle.
 
@@ -113,7 +222,7 @@ src/
 
 ---
 
-## 🔌 Services
+## Services
 
 All API calls go through a shared Axios instance configured with `VITE_API_BASE_URL`.
 
@@ -126,7 +235,7 @@ All API calls go through a shared Axios instance configured with `VITE_API_BASE_
 
 ---
 
-## 🗂 Constants (`app.constant.js`)
+## Constants (`app.constant.js`)
 
 Centralises all shared values used across the app:
 
@@ -139,7 +248,7 @@ Centralises all shared values used across the app:
 
 ---
 
-## 🔐 Auth Flow
+## Auth Flow
 
 - JWT token and user object are stored in `localStorage` on login/signup.
 - Header checks for the token to render Sign In links vs. the Profile menu.
@@ -184,7 +293,7 @@ Centralises all shared values used across the app:
 
 ---
 
-## 🚀 CI/CD — GitHub Actions
+## CI/CD — GitHub Actions
 
 Push to `main` triggers `.github/workflows/deploy.yml`:
 
@@ -197,9 +306,9 @@ Push to `main` triggers `.github/workflows/deploy.yml`:
 
 ---
 
-## 📚 References
+## References
 
-### General
+### Core
 - **React Docs** - https://react.dev/  
 - **Redux Toolkit** - https://redux-toolkit.js.org/  
 - **React Router v7** - https://reactrouter.com/  
