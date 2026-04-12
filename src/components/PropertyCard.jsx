@@ -4,7 +4,7 @@ import {formatEURO} from "../utils/currency";
 import {formatDate} from "../utils/date.js";
 import {addFavorite, deleteFavorite} from "../services/favorite.service.js";
 import {getLocalStorage} from "../utils/localStorage.js";
-import {SUCCESS, USER} from "../constants/app.constant.js";
+import {BerColor, SUCCESS, USER} from "../constants/app.constant.js";
 import {useNavigate} from "react-router-dom";
 
 const PropertyCard = ({property}) => {
@@ -202,7 +202,9 @@ const PropertyCard = ({property}) => {
                         {berrating && (
                             <div className="flex items-center">
                                 <span
-                                    className="bg-bg text-xs font-bold px-1.5 py-0.5 rounded">BER {berrating}</span>
+                                    className="text-white text-xs font-bold px-1.5 py-0.5 rounded"
+                                    style={{background: BerColor[berrating] || '#888'}}>BER {berrating}</span>
+
                             </div>
                         )}
                     </div>
