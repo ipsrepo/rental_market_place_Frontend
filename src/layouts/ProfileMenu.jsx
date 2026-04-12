@@ -45,7 +45,7 @@ const ProfileMenu = () => {
                         {userDetails.email && <div className="text-xs">{userDetails.email}</div>}
                     </div>
 
-                    <div className="px-4 py-3 border-b border-gray-100 flex flex-col gap-2 profile-menu">
+                    <div className="px-4 py-3 border-b border-gray-100 flex flex-col gap-2 profile-menu" onClick={()=> setIsOpen(false)}>
                         <Link to="/profile?tab=saved">
                             <p>My Favorites</p>
                         </Link>

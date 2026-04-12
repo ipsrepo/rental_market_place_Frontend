@@ -200,22 +200,30 @@ const PropertyFormPage = () => {
         const errs = validate();
         if (Object.keys(errs).length > 0) {
             setErrors(errs);
-            document.querySelector('.border-red')?.scrollIntoView({behavior: 'smooth', block: 'center'});
             return;
         }
 
         setSaving(true);
         try {
             const formData = new FormData();
-            Object.entries(form).forEach(([k, v]) => formData.append(k, v));
-            if (!isEdit) {
-                formData.append('owner', userId);
-            }
-            images.forEach((img) => {
-                if (img instanceof File) formData.append('images', img);
+            Object.entries(form).forEach(([k, v]) => {
+                if (k !== 'images' && k !== 'primaryimage') {
+                    formData.append(k, v);
+                }
             });
 
-            // POST for new, PATCH for edit
+            if (!isEdit) formData.append('owner', userId);
+
+            const existingUrls = images.filter(img => typeof img === 'string');
+            const newFiles     = images.filter(img => img instanceof File);
+
+            existingUrls.forEach((url, i) => {
+                if (i === 0) formData.append('existingPrimary', url);
+                else         formData.append('existingImages',  url);
+            });
+
+            newFiles.forEach(file => formData.append('images', file));
+
             const response = isEdit
                 ? await updateProperty(existingProperty._id, formData)
                 : await addProperty(formData);
@@ -373,8 +381,6 @@ const PropertyFormPage = () => {
                         <div>
                             <Label required>Rent amount (€)</Label>
                             <div className="relative">
-                                <span
-                                    className="absolute left-3.5 top-1/2 -translate-y-1/2 text-text font-medium text-sm">€</span>
                                 <input type="number" min="0" placeholder="0" value={form.price}
                                        onChange={(e) => set('price', e.target.value)}
                                        className={`w-full pl-7 pr-3.5 py-2.5 border rounded-lg text-sm text-accent
