@@ -1,0 +1,206 @@
+{
+  "id": 1,
+  "basicInfo": {
+    "title": "Feel Comfortable at Home, Free Wi-Fi for 6 months – limited-time offer",
+    "description": "Spacious room in quiet neighborhood with garden access...",
+    "propertyType": "house", // "house", "apartment", "studio", "shared"
+    "rentalType": "entire_place", // "entire_place", "private_room", "shared_room", "bed"
+    "status": "available", // "available", "rented", "pending"
+    "listedDate": "2024-03-15",
+    "availableFrom": "2024-04-01"
+  },
+
+  "location": {
+    "address": "Brickfield Square, Brickfield Drive",
+    "area": "Rialto",
+    "city": "Dublin 8",
+    "postalCode": "D08",
+    "county": "Dublin",
+    "country": "Ireland",
+    "coordinates": {
+      "lat": 53.334,
+      "lng": -6.277
+    },
+    "nearby": [
+      "5 min to Luas stop",
+      "10 min to city centre",
+      "Near supermarkets"
+    ]
+  },
+
+  "pricing": {
+    "monthlyRent": 1200,
+    "securityDeposit": 1200,
+    "billsIncluded": true, // or false
+    "billsDetails": "Electricity, Internet, Water included",
+    "paymentDue": "1st of every month",
+    "lateFee": 50
+  },
+
+  "specifications": {
+    "bedrooms": 3,
+    "bathrooms": 2,
+    "size": 85, // square meters
+    "furnished": true, // "furnished", "semi-furnished", "unfurnished"
+    "floor": 2, // ground, 1, 2, etc.
+    "hasGarden": true,
+    "hasParking": true,
+    "parkingType": "off_street", // "on_street", "off_street", "garage"
+    "petFriendly": false,
+    "smokingAllowed": false,
+    "minimumStay": 6, // months
+    "maximumStay": 24 // months, null for unlimited
+  },
+
+  "roomDetails": { // Only if renting individual room
+    "roomType": "double", // "single", "double", "twin", "master"
+    "roomSize": 15, // square meters
+    "privateBathroom": false,
+    "privateBalcony": false,
+    "roommates": 2, // number of other people
+    "sharedWith": "mixed", // "male", "female", "mixed", "couple"
+    "roomFeatures": ["wardrobe", "desk", "double bed", "heater"]
+  },
+
+  "bedDetails": { // Only if renting individual bed in shared room
+    "bedType": "bunk", // "single", "bunk", "double"
+    "roommates": 3, // people in same room
+    "locker": true,
+    "curtain": true,
+    "readingLight": true
+  },
+
+  "amenities": {
+    "essentials": ["wifi", "heating", "hot water", "kitchen access"],
+    "appliances": ["washing machine", "dryer", "dishwasher", "microwave", "fridge"],
+    "facilities": ["gym", "pool", "elevator", "security system"],
+    "furniture": ["bed", "wardrobe", "desk", "chair", "sofa", "dining table"],
+    "outdoor": ["garden", "balcony", "roof terrace", "bbq area"],
+    "accessibility": ["wheelchair access", "ground floor"]
+  },
+
+  "rules": {
+    "gender": "any",
+    "studentsOnly": false,
+    "professionalsOnly": true,
+    "couplesAllowed": false,
+    "petsAllowed": false,
+    "smokingAllowed": false,
+    "partiesAllowed": false,
+    "overnightGuests": true,
+    "others": "No more than 3 nights per month"
+  },
+
+  "media": {
+    "primaryImage": "https://example.com/image1.jpg",
+    "galleryImages": [
+      "https://example.com/image2.jpg",
+      "https://example.com/image3.jpg",
+      "https://example.com/image4.jpg"
+    ],
+  },
+
+  "utilities": {
+    "internet": {
+      "included": true,
+      "speed": "100 Mbps",
+      "provider": "Virgin Media"
+    },
+    "electricity": {
+      "included": true,
+      "estimatedCost": 80 // per month if not included
+    },
+    "gas": {
+      "included": true,
+      "estimatedCost": 60
+    },
+    "water": {
+      "included": true
+    },
+    "wasteCollection": {
+      "included": true
+    }
+  },
+
+  "owner": {
+    "id": 101,
+    "name": "John Smith",
+    "type": "private", // "private", "agency", "corporate"
+    "phone": "+353 87 123 4567",
+    "email": "john@example.com",
+    "verified": true,
+    "responseRate": 98, // percentage
+    "responseTime": "within 1 hour",
+    "languages": ["English", "Spanish"],
+    "joinedDate": "2020-01-15"
+  },
+
+  "ratings": {
+    "overall": 4.5,
+    "cleanliness": 4.7,
+    "communication": 4.8,
+    "value": 4.3,
+    "location": 4.6,
+    "accuracy": 4.4,
+    "totalReviews": 24
+  },
+
+  "reviews": [
+    {
+      "id": 1001,
+      "userId": 501,
+      "userName": "Sarah",
+      "rating": 5,
+      "comment": "Great place, very clean and exactly as described",
+      "date": "2024-02-10"
+    }
+  ],
+
+  "energy": {
+    "berRating": "A2",
+    "berNumber": "123456",
+    "energyEfficiency": 85,
+    "co2Emissions": 15
+  },
+
+  "leaseTerms": {
+    "minimumLease": 6,
+    "maximumLease": 12,
+    "leaseType": "fixed", // "fixed", "periodic", "month-to-month"
+    "noticePeriod": 30,
+    "depositRequired": true,
+    "depositAmount": 1200,
+    "adminFee": 0,
+    "referencesRequired": true,
+    "guarantorRequired": false,
+    "incomeRequirement": "Monthly income 2.5x rent"
+  },
+
+  "availability": {
+    "status": "available",
+    "availableFrom": "2024-04-01",
+    "availableUntil": null,
+    "viewingDates": [
+      "2024-03-20 14:00",
+      "2024-03-21 11:00",
+      "2024-03-22 16:00"
+    ]
+  },
+
+  "tags": [
+    "newly renovated",
+    "city center",
+    "quiet neighborhood",
+    "near university",
+    "bills included",
+    "wifi included",
+    "furnished",
+    "parking available"
+  ],
+
+  "seo": {
+    "metaTitle": "Spacious Room in Rialto - Bills Included",
+    "metaDescription": "Furnished double room in quiet neighborhood. €1200/month including bills. Available from April 1st.",
+    "slug": "spacious-room-rialto-dublin-8"
+  }
+}
