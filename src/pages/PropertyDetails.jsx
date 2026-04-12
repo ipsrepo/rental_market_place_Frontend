@@ -6,6 +6,7 @@ import {sendMail} from "../services/mail.service.js";
 import {SUCCESS, USER} from "../constants/app.constant";
 import {getLocalStorage} from "../utils/localStorage";
 import {getUser} from "../services/user.service.js";
+import Modal from "../components/Modal.jsx";
 
 const Icon = ({d, className = "w-5 h-5", filled = false}) => (
     <svg className={className} fill={filled ? "currentColor" : "none"} viewBox="0 0 24 24"
@@ -118,7 +119,7 @@ const PropertyDetails = () => {
             }
         }
 
-        if(property?.owner) fetchOwner()
+        if (property?.owner) fetchOwner()
     }, [property]);
 
     useEffect(() => {
@@ -434,120 +435,119 @@ const PropertyDetails = () => {
 
             {/* ── Message Modal ─────────────────────────────────────────────── */}
             {showModal && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white rounded-2xl w-full max-w-md max-h-[92vh] overflow-y-auto shadow-2xl">
+                <Modal show={showModal} onClose={() => setShowModal(false)}>
 
-                        {/* Modal header */}
-                        <div className="flex justify-between items-center p-5 border-b border-border">
-                            <div>
-                                <h2 className="text-lg font-bold text-accent">Send message to host</h2>
-                                <p className="text-xs text-text mt-0.5 opacity-70">{property.title}</p>
-                            </div>
-                            <button
-                                onClick={() => setShowModal(false)}
-                                className="w-8 h-8 rounded-full bg-bg flex items-center justify-center hover:bg-gray-200 transition"
-                            >
-                                <Icon d={Icons.close} className="w-4 h-4 text-accent"/>
-                            </button>
+
+                    {/* Modal header */}
+                    <div className="flex justify-between items-center pb-5 border-b border-border">
+                        <div>
+                            <h2 className="text-lg font-bold text-accent">Send message to host</h2>
+                            <p className="text-xs text-text mt-0.5 opacity-70">{property.title}</p>
                         </div>
-
-                        {messageSent ? (
-                            <div className="p-10 text-center">
-                                <div
-                                    className="w-16 h-16 bg-[#62be6320] rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <Icon d={Icons.check} className="w-8 h-8 text-primary"/>
-                                </div>
-                                <h3 className="text-xl font-bold text-accent mb-2">Message Sent!</h3>
-                                <p className="text-text text-sm">The host will respond to you shortly.</p>
-                            </div>
-                        ) : (
-                            <form onSubmit={handleSendMessage} className="p-5 space-y-4">
-
-                                {[
-                                    {
-                                        label: 'Your name',
-                                        name: 'name',
-                                        type: 'text',
-                                        icon: 'user',
-                                        required: true,
-                                        placeholder: 'John Murphy',
-                                        default: user?.name
-                                    },
-                                    {
-                                        label: 'Email',
-                                        name: 'email',
-                                        type: 'email',
-                                        icon: 'mail',
-                                        required: true,
-                                        placeholder: 'john@example.com',
-                                        default: user?.email
-                                    },
-                                    {
-                                        label: 'mobile',
-                                        name: 'mobile',
-                                        type: 'tel',
-                                        icon: 'mobile',
-                                        required: false,
-                                        placeholder: '+353 87 123 4567',
-                                        default: user?.mobile
-                                    },
-                                ].map(({label, name, type, icon, required, placeholder, default: def}) => (
-                                    <div key={name}>
-                                        <label className="block text-sm font-medium text-accent mb-1.5">
-                                            {label} {required && <span className="text-red">*</span>}
-                                        </label>
-                                        <div className="relative">
-                                            <input
-                                                type={type}
-                                                name={name}
-                                                required={required}
-                                                defaultValue={def}
-                                                placeholder={placeholder}
-                                                value={messageData[name]}
-                                                onChange={(e) => setMessageData(p => ({...p, [name]: e.target.value}))}
-                                                className="w-full pl-9 pr-3.5 py-2.5 border border-border rounded-lg text-sm text-accent placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition"
-                                            />
-                                        </div>
-                                    </div>
-                                ))}
-
-                                <div>
-                                    <label className="block text-sm font-medium text-accent mb-1.5">
-                                        Message <span className="text-red">*</span>
-                                    </label>
-                                    <textarea
-                                        name="message"
-                                        rows={4}
-                                        required
-                                        placeholder={`Hi, I'm interested in "${property.title}"...`}
-                                        value={messageData.message}
-                                        onChange={(e) => setMessageData(p => ({...p, message: e.target.value}))}
-                                        className="w-full px-3.5 py-2.5 border border-border rounded-lg text-sm text-accent placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition resize-none"
-                                    />
-                                </div>
-
-                                <button
-                                    type="submit"
-                                    disabled={sending}
-                                    className="w-full bg-primary hover:bg-[#4ea84f] disabled:opacity-60 text-white font-semibold py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
-                                >
-                                    {sending ? (
-                                        <>
-                                            <div
-                                                className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin"/>
-                                            Sending...
-                                        </>
-                                    ) : (
-                                        <>
-                                            <Icon d={Icons.mail} className="w-4 h-4"/>
-                                            Send message
-                                        </>
-                                    )}
-                                </button>
-                            </form>
-                        )}
+                        <button
+                            onClick={() => setShowModal(false)}
+                            className="w-8 h-8 rounded-full cursor-pointer bg-bg flex items-center justify-center hover:bg-gray-200 transition"
+                        >
+                            <Icon d={Icons.close} className="w-4 h-4 text-accent"/>
+                        </button>
                     </div>
-                </div>
+
+                    {messageSent ? (
+                        <div className="p-10 text-center">
+                            <div
+                                className="w-16 h-16 bg-[#62be6320] rounded-full flex items-center justify-center mx-auto mb-4">
+                                <Icon d={Icons.check} className="w-8 h-8 text-primary"/>
+                            </div>
+                            <h3 className="text-xl font-bold text-accent mb-2">Message Sent!</h3>
+                            <p className="text-text text-sm">The host will respond to you shortly.</p>
+                        </div>
+                    ) : (
+                        <form onSubmit={handleSendMessage} className="p-5 space-y-4">
+
+                            {[
+                                {
+                                    label: 'Your name',
+                                    name: 'name',
+                                    type: 'text',
+                                    icon: 'user',
+                                    required: true,
+                                    placeholder: 'John Murphy',
+                                    default: user?.name
+                                },
+                                {
+                                    label: 'Email',
+                                    name: 'email',
+                                    type: 'email',
+                                    icon: 'mail',
+                                    required: true,
+                                    placeholder: 'john@example.com',
+                                    default: user?.email
+                                },
+                                {
+                                    label: 'mobile',
+                                    name: 'mobile',
+                                    type: 'tel',
+                                    icon: 'mobile',
+                                    required: false,
+                                    placeholder: '+353 87 123 4567',
+                                    default: user?.mobile
+                                },
+                            ].map(({label, name, type, required, placeholder, default: def}) => (
+                                <div key={name}>
+                                    <label className="block text-sm font-medium text-accent mb-1.5">
+                                        {label} {required && <span className="text-red">*</span>}
+                                    </label>
+                                    <div className="relative">
+                                        <input
+                                            type={type}
+                                            name={name}
+                                            required={required}
+                                            defaultValue={def}
+                                            placeholder={placeholder}
+                                            value={messageData[name]}
+                                            onChange={(e) => setMessageData(p => ({...p, [name]: e.target.value}))}
+                                            className="w-full pl-9 pr-3.5 py-2.5 border border-border rounded-lg text-sm text-accent placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition"
+                                        />
+                                    </div>
+                                </div>
+                            ))}
+
+                            <div>
+                                <label className="block text-sm font-medium text-accent mb-1.5">
+                                    Message <span className="text-red">*</span>
+                                </label>
+                                <textarea
+                                    name="message"
+                                    rows={4}
+                                    required
+                                    placeholder={`Hi, I'm interested in "${property.title}"...`}
+                                    value={messageData.message}
+                                    onChange={(e) => setMessageData(p => ({...p, message: e.target.value}))}
+                                    className="w-full px-3.5 py-2.5 border border-border rounded-lg text-sm text-accent placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition resize-none"
+                                />
+                            </div>
+
+                            <button
+                                type="submit"
+                                disabled={sending}
+                                className="w-full bg-primary cursor-pointer hover:bg-primary disabled:opacity-60 text-white font-semibold py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
+                            >
+                                {sending ? (
+                                    <>
+                                        <div
+                                            className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin"/>
+                                        Sending...
+                                    </>
+                                ) : (
+                                    <>
+                                        <Icon d={Icons.mail} className="w-4 h-4"/>
+                                        Send message
+                                    </>
+                                )}
+                            </button>
+                        </form>
+                    )}
+                </Modal>
             )}
         </div>
     );
