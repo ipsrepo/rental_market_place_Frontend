@@ -2,11 +2,12 @@ import {useEffect, useState} from 'react';
 import Profile from "./Profile.jsx";
 import SavedProperties from "./SavedProperties.jsx";
 import MyProperties from "./MyProperties.jsx";
-import {getLocalStorage} from "../../utils/localStorage.js";
-import {SUCCESS, USER} from "../../constants/app.constant.js";
-import {useSearchParams} from "react-router-dom";
+import {deleteLocalStorage, getLocalStorage} from "../../utils/localStorage.js";
+import {SUCCESS, TOKEN, USER} from "../../constants/app.constant.js";
+import {useNavigate, useSearchParams} from "react-router-dom";
 import {getUserFavorites} from "../../services/favorite.service.js";
 import {deleteProperty, getUserProperties} from "../../services/property.service.js";
+import {deleteUser} from "../../services/user.service.js";
 
 
 const TABS = [
@@ -24,6 +25,7 @@ const ProfilePage = () => {
     const [myProperties, setMyProperties] = useState([]);
     const userDetails = getLocalStorage(USER);
     const [refresh, setRefresh] = useState(0);
+    const nav = useNavigate();
 
     const handleDeleteProperty = async (id) => {
         try {
@@ -64,8 +66,17 @@ const ProfilePage = () => {
         fetchMyListing()
     }, [refresh])
 
-    const handleDeleteAccount = () => {
-        alert('Account deleted (wire up your API call here)');
+    const handleDeleteAccount = async () => {
+        try {
+            const res = await deleteUser(userDetails?._id);
+            if (res.status == SUCCESS) {
+                deleteLocalStorage(TOKEN);
+                deleteLocalStorage(USER);
+                nav('/login')
+            }
+        } catch (e) {
+            console.error(e);
+        }
     };
 
     const tabCounts = {
