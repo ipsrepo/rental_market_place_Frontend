@@ -12,6 +12,7 @@ export default defineConfig({
     svgr(),
     babel({ presets: [reactCompilerPreset()] })
   ],
+  base: "/rental_market_place_Frontend/",
   server: {
     host: true,
     port: 3000,
