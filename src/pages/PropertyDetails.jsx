@@ -112,6 +112,14 @@ const PropertyDetails = () => {
         if (property?.owner) fetchOwner()
     }, [property]);
 
+    const handleContactHost = () => {
+        if(!userId){
+            navigate('/login')
+        } else {
+            setShowModal(true);
+        }
+    }
+
     useEffect(() => {
         const fetchProperty = async () => {
             try {
@@ -136,16 +144,22 @@ const PropertyDetails = () => {
 
     const handleFavoriteToggle = async () => {
         if (!userId) {
-            navigate('/signin');
+            navigate('/login');
             return;
         }
         try {
+
+            const formatData = {
+                property: property._id,
+                user: userId
+            };
+
             if (isFavorite) {
-                const res = await deleteFavorite(id);
-                if (res.status === SUCCESS) setIsFavorite(false);
+                const res = await deleteFavorite(formatData);
+                if (res.status == SUCCESS) setIsFavorite(false);
             } else {
-                const res = await addFavorite(id);
-                if (res.status === SUCCESS) setIsFavorite(true);
+                const res = await addFavorite(formatData);
+                if (res.status == SUCCESS) setIsFavorite(true);
             }
         } catch (e) {
             console.error(e);
@@ -400,7 +414,7 @@ const PropertyDetails = () => {
 
                         {/* Contact button */}
                         <button
-                            onClick={() => setShowModal(true)}
+                            onClick={handleContactHost}
                             className="w-full bg-primary hover:opacity-90 cursor-pointer text-white font-semibold py-3.5 px-6 rounded-xl transition-colors flex items-center justify-center gap-2 shadow-[0_8px_20px_8px_#21223308]"
                         >
                             <Icon d={Icons.mail} className="w-5 h-5"/>
