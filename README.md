@@ -2,7 +2,13 @@
 <img width="701" height="143" alt="image" src="https://github.com/user-attachments/assets/7c7f55c0-f99d-4f3a-8150-75cd3af0ea9c" />
 
 
-A rental property listing platform built with React 19, Redux Toolkit, and Tailwind CSS. Connects to a Node.js/Express backend for property listings, auth, favourites, and enquiries.
+A full-stack rental property platform built with React 19, Redux Toolkit, and Tailwind CSS, focused on scalable and maintainable frontend architecture.
+Users can browse listings, view detailed property pages, save favourites, and send enquiries, while authenticated users manage their own properties.
+
+The app integrates with a Node.js/Express backend for authentication, property management, and API handling.
+Emphasis is placed on clean state management, reusable components, and performance optimization.
+
+
 
 🔗 **Live:** https://ipsrepo.github.io/rental_market_place_Frontend
 
