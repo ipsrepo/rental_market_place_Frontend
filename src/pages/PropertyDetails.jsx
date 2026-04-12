@@ -413,13 +413,15 @@ const PropertyDetails = () => {
                         )}
 
                         {/* Contact button */}
-                        <button
-                            onClick={handleContactHost}
-                            className="w-full bg-primary hover:opacity-90 cursor-pointer text-white font-semibold py-3.5 px-6 rounded-xl transition-colors flex items-center justify-center gap-2 shadow-[0_8px_20px_8px_#21223308]"
-                        >
-                            <Icon d={Icons.mail} className="w-5 h-5"/>
-                            Contact Host
-                        </button>
+                        {property?.owner !== userId &&
+                            <button
+                                onClick={handleContactHost}
+                                className="w-full bg-primary hover:opacity-90 cursor-pointer text-white font-semibold py-3.5 px-6 rounded-xl transition-colors flex items-center justify-center gap-2 shadow-[0_8px_20px_8px_#21223308]"
+                            >
+                                <Icon d={Icons.mail} className="w-5 h-5"/>
+                                Contact Host
+                            </button>
+                        }
 
                         {/* Favourite button */}
                         <button
