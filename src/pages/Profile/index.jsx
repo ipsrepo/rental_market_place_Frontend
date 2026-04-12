@@ -4,7 +4,7 @@ import SavedProperties from "./SavedProperties.jsx";
 import MyProperties from "./MyProperties.jsx";
 import {getLocalStorage} from "../../utils/localStorage.js";
 import {SUCCESS, USER} from "../../constants/app.constant.js";
-import {useNavigate, useSearchParams} from "react-router-dom";
+import {useSearchParams} from "react-router-dom";
 import {getUserFavorites} from "../../services/favorite.service.js";
 import {deleteProperty, getUserProperties} from "../../services/property.service.js";
 
@@ -23,7 +23,16 @@ const ProfilePage = () => {
     const [savedProperties, setSavedProperties] = useState([]);
     const [myProperties, setMyProperties] = useState([]);
     const userDetails = getLocalStorage(USER);
-    const nav = useNavigate();
+    const [refresh, setRefresh] = useState(0);
+
+    const handleDeleteProperty = async (id) => {
+        try {
+            await deleteProperty(id);
+            setRefresh(r => r + 1);
+        } catch (e) {
+            console.error(e);
+        }
+    };
 
     useEffect(() => {
         const fetchSaved = async () => {
@@ -38,7 +47,7 @@ const ProfilePage = () => {
         }
 
         fetchSaved()
-    }, [])
+    }, [refresh])
 
     useEffect(() => {
         const fetchMyListing = async () => {
@@ -53,27 +62,10 @@ const ProfilePage = () => {
         }
 
         fetchMyListing()
-    }, [])
+    }, [refresh])
 
     const handleDeleteAccount = () => {
         alert('Account deleted (wire up your API call here)');
-    };
-
-    const handleEdit = (property) => {
-        alert(`Edit property: ${property.title}\n(wire up your edit modal/page here)`);
-    };
-
-    const handleDeleteProperty = async (id) => {
-        const response = confirm('Are you sure you want to delete this property?');
-        if(!response) return;
-        try {
-            const res = await deleteProperty(id);
-            if (res.status == SUCCESS) {
-                nav(0)
-            }
-        } catch (e) {
-            console.error(e);
-        }
     };
 
     const tabCounts = {
@@ -122,7 +114,6 @@ const ProfilePage = () => {
                 {activeTab === 'listings' && (
                     <MyProperties
                         properties={myProperties}
-                        onEdit={handleEdit}
                         deleteProperty={handleDeleteProperty}
                     />
                 )}
