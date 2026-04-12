@@ -4,7 +4,7 @@ import {Link} from "react-router-dom";
 
 const AuthCard = ({children}) => {
     return (
-        <div className="min-h-screen flex items-center justify-center bg-light px-4">
+        <div className="min-h-screen flex items-center justify-center bg-bg px-4">
             <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-8">
 
                 <h2 className="mb-2 flex justify-center">
