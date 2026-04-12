@@ -47,7 +47,7 @@ export const BEDROOM_OPTIONS  = [0, 1, 2, 3, 4, 5, 6, 7, 8];
 export const BATHROOM_OPTIONS = [1, 2, 3, 4, 5];
 
 export const INITIAL_FORM = {
-    title:             'Studio Appartment',
+    title:             'Studio Apartment',
     details:           'test',
     location:          'test',
     price:             '2000',
@@ -64,4 +64,14 @@ export const INITIAL_FORM = {
     available:         true,
     availablefrom:     '',
     berrating:         '',
+};
+
+export const BerColor = {
+    a1: '#00a651', a2: '#00a651', a3: '#00a651',
+    b1: '#8dc63f', b2: '#8dc63f', b3: '#8dc63f',
+    c1: '#ffde17', c2: '#ffde17', c3: '#ffde17',
+    d1: '#f7941d', d2: '#f7941d',
+    e1: '#f15a29', e2: '#f15a29',
+    f: '#ed1c24',
+    g: '#c1272d',
 };

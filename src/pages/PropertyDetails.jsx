@@ -3,7 +3,7 @@ import {useNavigate, useParams} from "react-router-dom";
 import {getPropertyById} from "../services/property.service";
 import {addFavorite, deleteFavorite, getUserFavorites} from "../services/favorite.service";
 import {sendMail} from "../services/mail.service.js";
-import {SUCCESS, USER} from "../constants/app.constant";
+import {BerColor, SUCCESS, USER} from "../constants/app.constant";
 import {getLocalStorage} from "../utils/localStorage";
 import {getUser} from "../services/user.service.js";
 import Modal from "../components/Modal.jsx";
@@ -38,16 +38,6 @@ const Icons = {
     bill: "M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z",
     share: "M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13",
     ber: "M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z",
-};
-
-const BerColor = {
-    a1: '#00a651', a2: '#00a651', a3: '#00a651',
-    b1: '#8dc63f', b2: '#8dc63f', b3: '#8dc63f',
-    c1: '#ffde17', c2: '#ffde17', c3: '#ffde17',
-    d1: '#f7941d', d2: '#f7941d',
-    e1: '#f15a29', e2: '#f15a29',
-    f: '#ed1c24',
-    g: '#c1272d',
 };
 
 const formatDate = (d) => d ? new Date(d).toLocaleDateString('en-IE', {
