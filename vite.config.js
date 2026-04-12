@@ -23,6 +23,7 @@ export default defineConfig({
       include: [
         'src/components/Modal.jsx',
         'src/pages/Profile/MyProperties.jsx',
+        'src/pages/Profile/index.jsx',
       ],
     },
   },
