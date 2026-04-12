@@ -44,4 +44,6 @@ export const router = createBrowserRouter([
         path: "/signup",
         element: <CreateAccount/>
     }
-]);
+], {
+    basename: "/rental_market_place_Frontend/"
+});
