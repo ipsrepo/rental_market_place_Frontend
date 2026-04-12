@@ -64,15 +64,16 @@ This project addresses those pain points by providing:
 
 ## 🛠 Tech Stack
 
-| | |
-|---|---|
-| Framework | React 19 |
-| State Management | Redux Toolkit + React Redux |
-| Routing | React Router DOM v7 |
-| Styling | Tailwind CSS v4 |
-| HTTP Client | Axios |
-| Build Tool | Vite 8 |
-| Deployment | GitHub Pages (via GitHub Actions) |
+|                  |                                   |
+|------------------|-----------------------------------|
+| Framework        | React 19                          |
+| State Management | Redux Toolkit + React Redux       |
+| Routing          | React Router DOM v7               |
+| Styling          | Tailwind CSS v4                   |
+| HTTP Client      | Axios                             |
+| Build Tool       | Vite 8                            |
+| Test Tool        | Vitest                            |
+| Deployment       | GitHub Pages (via GitHub Actions) |
 
 ---
 
@@ -87,7 +88,8 @@ src/
 ├── layouts/           # MainLayout, Header, ProfileMenu
 ├── pages/             # Route-level page components
 ├── services/          # Axios API service modules
-└── utils/             # localStorage, date, currency helpers
+├── utils/             # localStorage, date, currency helpers
+└── __tests__/         # unit and integration tests
 ```
 
 ---
@@ -186,10 +188,12 @@ Create a `.env` file in the root:
 
 ```
 
-npm run dev        # Start dev server
-npm run build      # Production build
-npm run preview    # Preview built app
-npm run deploy     # Deploy to GitHub Pages
+npm run dev                 # Start dev server
+npm run build               # Production build
+npm run test                # Run the test
+npm run test:coverage       # Run test with code coverage
+npm run preview             # Preview built app
+npm run deploy              # Deploy to GitHub Pages
 
 ```
 
@@ -314,6 +318,8 @@ Push to `main` triggers `.github/workflows/deploy.yml`:
 - **React Router v7** - https://reactrouter.com/  
 - **Tailwind CSS v4** - https://tailwindcss.com/  
 - **Vite** - https://vite.dev/  
+- **Vitest** - https://vitest.dev/guide/  
+- **Jest** - https://jestjs.io/  
 - **GitHub Pages Action** - https://github.com/actions/deploy-pages  
 
 ### Video
