@@ -20,7 +20,9 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'lcov'],
-      include: [],
+      include: [
+        'src/components/Modal.jsx',
+      ],
     },
   },
   base: "/rental_market_place_Frontend/",
