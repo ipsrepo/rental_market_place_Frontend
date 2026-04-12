@@ -295,6 +295,10 @@ Centralises all shared values used across the app:
 <img width="1595" height="1128" alt="Screenshot 2026-04-12 215829" src="https://github.com/user-attachments/assets/0555c54d-bcd9-44ac-a11e-1fa33a909c25" />
 <img width="1592" height="1136" alt="Screenshot 2026-04-12 215837" src="https://github.com/user-attachments/assets/d41424fd-9715-4191-bc03-da252d6a0afb" />
 
+### **Test Coverage**
+
+![img.png](img.png)
+
 ---
 
 ## CI/CD — GitHub Actions
