@@ -314,6 +314,13 @@ Push to `main` triggers `.github/workflows/deploy.yml`:
 > **Setup:** Add `VITE_API_BASE_URL` under **Repo → Settings → Secrets and variables → Actions**.
 
 ---
+## AI Usage
+ 
+- **Tailwind CSS Styling** — Used Claude to generate Tailwind utility classes for component layouts, badges, and responsive design.
+- **Debugging** — Used Claude to diagnose and resolve configuration conflicts and unexpected rendering issues during development.
+- **Code Refinement** — Used Claude to review component logic and improve form state handling and conditional rendering patterns.
+ 
+---
 
 ## References
 
@@ -339,3 +346,6 @@ Push to `main` triggers `.github/workflows/deploy.yml`:
 - Reddit - https://www.reddit.com/r/reactjs/  
 - dev.to - https://dev.to/  
 - Claude - https://claude.ai/
+
+Prompts: https://claude.ai/share/f83204c2-c7f1-4fb2-8d47-a8486d832cb6
+          https://claude.ai/share/0c680012-2203-49ab-ac02-a67ec2265ca6
