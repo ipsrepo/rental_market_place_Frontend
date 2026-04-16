@@ -347,5 +347,7 @@ Push to `main` triggers `.github/workflows/deploy.yml`:
 - dev.to - https://dev.to/  
 - Claude - https://claude.ai/
 
-Prompts: https://claude.ai/share/f83204c2-c7f1-4fb2-8d47-a8486d832cb6
-          https://claude.ai/share/0c680012-2203-49ab-ac02-a67ec2265ca6
+### Prompts: 
+- https://claude.ai/share/f83204c2-c7f1-4fb2-8d47-a8486d832cb6
+- https://claude.ai/share/22422dcb-5433-475b-9f9c-387f9f998310
+- https://claude.ai/share/0c680012-2203-49ab-ac02-a67ec2265ca6
