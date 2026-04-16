@@ -95,7 +95,7 @@ const PropertyDetails = () => {
             mobile: user?.mobile,
             message: `Hi, I'm interested in ${property?.title ?? ''}`
         })
-    }, []);
+    }, [property]);
 
     useEffect(() => {
         const fetchOwner = async () => {
